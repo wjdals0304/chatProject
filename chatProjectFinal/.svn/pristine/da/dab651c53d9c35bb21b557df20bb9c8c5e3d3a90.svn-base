@@ -1,0 +1,312 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Simple Talk</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath }/resources/css/w3.css">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath }/resources/css/main.css">
+<script
+	src="${pageContext.request.contextPath}/resources/js/jquery-3.1.1.js"></script>
+<style>
+.mySlides {
+	display: none;
+	height: 100%;
+	width: 100%;
+}
+
+.w3-left, .w3-right, .w3-badge {
+	cursor: pointer
+}
+
+.w3-badge {
+	height: 13px;
+	width: 13px;
+	padding: 0
+}
+</style>
+<script>
+	$(document).ready(function() {
+
+		$(".infoBtn").click(function() {
+			$("#optionRoomInfo").css({
+				"display" : "block",
+				'top' : $(this).offset().top,
+				'left' : '45%'
+			});
+		});
+
+		$(".infoClose").click(function() {
+			$("#optionRoomInfo").css("display", "none");
+		});
+
+		$("#btnCreate").click(function() {
+
+			$.ajax({
+				url : "/Socket.web/chat/chkAdmin.do",
+				type : "post",
+				data : {
+					"loginId" : '${sessionScope.loginId}'
+				},
+				success : successCallback,
+				error : errorCallback
+
+			});
+		});
+
+		var successCallback = function(data) {
+			if (data) {
+				alert("방은 1개만 생성 할 수 있습니다.")
+			} else {
+				alert("아앙?")
+			}
+
+		}
+
+		var errorCallback = function() {
+			alert("에러발생")
+		}
+
+	});
+</script>
+</head>
+<body>
+	<!-- Links (sit on top) -->
+	<div class="w3-top">
+		<ul class="w3-navbar w3-indigo " id="myNavbar">
+			<li><a href="#home" class="w3-wide">Simple Talk</a></li>
+			<!-- Right-sided navbar links -->
+			<li class="w3-right w3-hide-small"><a href="#team"><i
+					class="fa fa-user"></i> 나의정보</a> <a href="#work"><i
+					class="fa fa-sign-out"></i> 로그아웃</a> <a href="search.html"><i
+					class="fa fa-search"></i></a></li>
+			<!-- Hide right-floated links on small screens and replace them with a menu icon -->
+			<li><a href="javascript:void(0)"
+				class="w3-right w3-hide-large w3-hide-medium" onclick="w3_open()">
+					<i class="fa fa-bars w3-padding-right w3-padding-left"></i>
+			</a></li>
+		</ul>
+	</div>
+	<!-- Header with image -->
+	<div class="bgimg w3-display-container w3-grayscale-min" id="home">
+		<a class="w3-btn-floating w3-hover-dark-grey w3-display-left"
+			onclick="plusDivs(-1)">&#10094;</a> <a
+			class="w3-btn-floating w3-hover-dark-grey w3-display-right"
+			onclick="plusDivs(1)">&#10095;</a>
+
+		<div class="w3-display-container mySlides">
+			<img
+				src="${pageContext.request.contextPath }/resources/img/music.jpg"
+				style="height: 100%; width: 100%;">
+			<div
+				class="w3-display-middle w3-small w3-container w3-padding-16 w3-black"
+				style="opacity: 0.9">음악을 사랑하는 당신들과...</div>
+		</div>
+
+		<div class="w3-display-container mySlides">
+			<img
+				src="${pageContext.request.contextPath }/resources/img/study.jpg"
+				style="height: 100%; width: 100%;">
+			<div
+				class="w3-display-bottomleft w3-small w3-container w3-padding-16 w3-teal"
+				style="opacity: 0.8">같이 공부시작해요!</div>
+		</div>
+
+		<div class="w3-display-container mySlides">
+			<img src="${pageContext.request.contextPath }/resources/img/trip.jpg"
+				style="height: 100%; width: 100%;">
+			<div
+				class="w3-display-bottomright w3-small w3-container w3-padding-16 w3-dark-grey"
+				style="opacity: 0.8">힐링여행을 떠나봅시다~!!</div>
+		</div>
+	</div>
+
+
+
+	<!-- Add a background color and large text to the whole page -->
+
+	<!-- Menu Container -->
+	<div class="w3-container">
+		<div class="w3-content" style="max-width: 700px">
+			<div class="w3-card-4" id="optionRoomInfo">
+				<div class="w3-container w3-indigo">
+					<span class="w3-large w3-padding">대화방 정보</span> <a href="#none"
+						class="fa fa-close w3-large infoClose" style="float: right;"></a>
+					<p>
+						<a href="#none"><span
+							style="float: right; padding-bottom: 5px;"
+							class="w3-small fa fa-sign-in">&nbsp;&nbsp;입장</span></a>
+					</p>
+				</div>
+				<div class="userList w3-container w3-white w3-small"
+					style="overflow-y: scroll; height: 250px">
+					<div class="w3-panel w3-pale-green w3-leftbar w3-border-indigo">
+						<span>방장</span>
+					</div>
+					<ul class="w3-ul ">
+						<li>김하나</li>
+					</ul>
+					<div class="w3-panel w3-pale-green w3-leftbar w3-border-indigo">
+						<span>참여자</span>
+					</div>
+					<ul class="w3-ul ">
+						<li class="w3-light-grey">참여자</li>
+						<li><a href="#none">윤지미</a></li>
+						<li><a href="#none">양희정</a></li>
+						<li><a href="#none">박혜성</a></li>
+						<li><a href="#none">김정민</a></li>
+						<li><a href="#none">장재희</a></li>
+						<li><a href="#none">장선영</a></li>
+						<li><a href="#none">장선영</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="w3-row w3-padding" id="category">
+				<select class="w3-select-main w3-medium">
+					<option>전체주제</option>
+					<option>여행</option>
+					<option>맛집</option>
+					<option>공부</option>
+					<option>영화</option>
+					<option>자동차</option>
+					<option>주식</option>
+				</select>
+				<c:choose>
+					<c:when test="${exgistAdmin}">
+						<button id="btnCreate" class="w3-btn w3-blue w3-medium"
+							style="float: right;">방만들기c</button>
+					</c:when>
+
+					<c:otherwise>
+						<button class="w3-btn w3-blue w3-medium" style="float: right;"
+							id="create"
+							onclick="location.href = '/Socket.web/chat/create.do'">방만들기z ${chkUsers.loginId }</button>
+					</c:otherwise>
+				</c:choose>
+			</div>
+			<hr>
+			<div class="w3-row w3-padding" id="chatList">
+				<ul class="w3-ul w3-large">
+					<c:choose>
+						<c:when test="${roomList[0].roomNumber eq null }">
+							<li>개설된 대화방이 없습니다.<br> 대화가 필요하면 대화방을 개설하세요.
+							</li>
+						</c:when>
+						<c:otherwise>
+							<c:forEach items="${roomList}" var="room">
+								<li>
+									<div class="w3-text-grey w3-small">
+										<span>맛집</span> <a href="#none"
+											class="fa fa-ellipsis-h infoBtn" aria-hidden="true"
+											style="float: right;"></a>
+									</div>
+									<div class="w3-text-dark-grey w3-large">
+										<a href="#none"><span><b>${room.title}</b></span></a>
+
+									</div>
+									<div class="w3-text-grey">
+										<span class="w3-medium">인원수
+											(${room.inUsers}/${room.limitUsers})</span>&nbsp;&nbsp; <span
+											class="fa fa-user w3-medium" aria-hidden="true">&nbsp;${room.admin}</span>&nbsp;
+									</div> <c:choose>
+										<c:when test="${ room.inUsers lt room.limitUsers }">
+											<div>
+												<span><a
+													href="/Socket.web/chat/join.do?loginId=${sessionScope.loginId}&roomNumber=${room.roomNumber}"><button
+															class="w3-btn w3-blue-grey w3-tiny">
+															<b>입장</b>
+														</button></a></span>
+											</div>
+										</c:when>
+
+										<c:otherwise>
+											<c:choose>
+												<c:when test="${sessionScope.loginId}">
+													<div>
+														<span><a
+															href="/Socket.web/chat/join.do?loginId=${sessionScope.loginId}&roomNumber=${room.roomNumber}"><button
+																	class="w3-btn w3-blue-grey w3-tiny">
+																	<b>입장</b>
+																</button></a></span>=9o
+													</div>
+												</c:when>
+												<c:otherwise>
+												<div>
+													<span> <b class="w3-btn w3-blue-grey w3-tiny">입장불가</b>
+													</span>
+												</div>
+												</c:otherwise>
+											</c:choose>
+										</c:otherwise>
+									</c:choose>
+
+								</li>
+							</c:forEach>
+						</c:otherwise>
+
+					</c:choose>
+
+
+				</ul>
+			</div>
+			<div class="w3-row w3-padding" id="listMore">
+				<span><button class="w3-btn-block w3-blue w3-medium">
+						<b>더보기(5/124)</b>
+					</button></span>
+			</div>
+			<div class="w3-tooltip w3-center">
+				<a class="w3-text-dark-grey" href="#home"><span
+					class="w3-xlarge"> <i class="fa fa-chevron-circle-up"></i></span></a>
+			</div>
+		</div>
+		<!-- End page content -->
+	</div>
+
+	<!-- Footer -->
+	<footer class="w3-center w3-light-grey w3-padding-48 w3-large">
+		<p>
+			Powered by <a href="http://www.w3schools.com/w3css/default.asp"
+				title="W3.CSS" target="_blank" class="w3-hover-text-green">w3.css</a>
+		</p>
+	</footer>
+	<script>
+		var slideIndex = 1;
+		showDivs(slideIndex);
+
+		function plusDivs(n) {
+			showDivs(slideIndex += n);
+		}
+
+		function currentDiv(n) {
+			showDivs(slideIndex = n);
+		}
+
+		function showDivs(n) {
+			var i;
+			var x = document.getElementsByClassName("mySlides");
+			var dots = document.getElementsByClassName("demo");
+			if (n > x.length) {
+				slideIndex = 1
+			}
+			if (n < 1) {
+				slideIndex = x.length
+			}
+			for (i = 0; i < x.length; i++) {
+				x[i].style.display = "none";
+			}
+			for (i = 0; i < dots.length; i++) {
+				dots[i].className = dots[i].className.replace(" w3-white", "");
+			}
+			x[slideIndex - 1].style.display = "block";
+			dots[slideIndex - 1].className += " w3-white";
+		}
+	</script>
+</body>
+</html>

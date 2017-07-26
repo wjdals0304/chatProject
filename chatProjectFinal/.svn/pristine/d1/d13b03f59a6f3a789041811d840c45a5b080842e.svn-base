@@ -1,0 +1,70 @@
+package chat.domain;
+
+import java.util.Date;
+
+public class Message {
+	
+	private int fileSize; 
+	private String to;
+	private String from;
+	private String contents;
+	private String roomNumber;
+	private String type;
+	private Date date;
+	
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public int getFileSize() {
+		return fileSize;
+	}
+	
+	public void setFileSize(int fileSize) {
+		this.fileSize = fileSize;
+	}
+	public String getTo() {
+		return to;
+	}
+	public void setTo(String to) {
+		this.to = to;
+	}
+	public String getFrom() {
+		return from;
+	}
+	public void setFrom(String from) {
+		this.from = from;
+	}
+	public String getContents() {
+		return contents;
+	}
+	public void setContents(String contents) {
+		this.contents = contents;
+	}
+	public String getRoomNumber() {
+		return roomNumber;
+	}
+	public void setRoomNumber(String roomNumber) {
+		this.roomNumber = roomNumber;
+	}
+
+	@Override
+	public String toString() {
+		return "Message [fileSize=" + fileSize + ", to=" + to + ", from=" + from + ", contents=" + contents
+				+ ", roomNumber=" + roomNumber + ", type=" + type + ", date=" + date + "]";
+	}
+	
+	
+}

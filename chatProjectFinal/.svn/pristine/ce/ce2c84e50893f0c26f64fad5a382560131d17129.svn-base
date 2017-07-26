@@ -1,0 +1,44 @@
+body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
+  body, html {
+      height: 100%;
+      line-height: 1.6;
+  }
+  a{
+    text-decoration:none;
+  }
+/* Full height image header */
+  .bgimg {
+    width: 100%;
+    min-height: 200px;
+    border-bottom: 10px solid #f1f1f1;
+    background-position: center;
+    background-size: cover;
+    overflow: hidden;
+    height: 200px;
+  }
+  .w3-navbar li a {
+      padding: 16px;
+      float: left;
+  }
+
+  #optionRoomInfo{
+    position: absolute;
+    top: 10px;
+    left:45%;
+    width: 200px;
+    display: none;
+  }
+  #mask {  
+    position:absolute;  
+    left:0;
+    top:0;
+    z-index:20;  
+    background-color:#000;  
+    display:none;  
+    opacity: 0.5;
+  }
+
+/* 메인 슬라이드 */
+  .mySlides {display:none; height:100%; width: 100%;}
+  .w3-left, .w3-right, .w3-badge {cursor:pointer}
+  .w3-badge {height:13px;width:13px;padding:0}

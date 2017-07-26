@@ -1,0 +1,65 @@
+package chat.domain;
+
+import java.util.List;
+
+public class Room {
+
+	private String roomNumber;
+	private String title;
+	private String admin;
+	private String notice;
+	private String category;
+	private String limitUsers;
+	private int inUsers;
+	private List<User> users;
+	
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	public String getAdmin() {
+		return admin;
+	}
+	public void setAdmin(String admin) {
+		this.admin = admin;
+	}
+	public String getRoomNumber() {
+		return roomNumber;
+	}
+	public void setRoomNumber(String roomNumber) {
+		this.roomNumber = roomNumber;
+	}
+	public List<User> getUsers() {
+		return users;
+	}
+	public void setUsers(List<User> users) {
+		this.users = users;
+	}
+	public String getNotice() {
+		return notice;
+	}
+	public void setNotice(String notice) {
+		this.notice = notice;
+	}
+	public String getLimitUsers() {
+		return limitUsers;
+	}
+	public void setLimitUsers(String limitUsers) {
+		this.limitUsers = limitUsers;
+	}
+	public String getCategory() {
+		return category;
+	}
+	public void setCategory(String category) {
+		this.category = category;
+	}
+	public int getInUsers() {
+		return inUsers;
+	}
+	public void setInUsers(int inUsers) {
+		this.inUsers = inUsers;
+	}
+	
+}

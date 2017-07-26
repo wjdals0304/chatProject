@@ -1,0 +1,114 @@
+package chat.dao;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import chat.domain.Category;
+import chat.domain.User;
+
+public class UserDaoLogicTest {
+
+	private UserDao userDao;
+	
+	@Before
+	public void setUp() throws Exception {
+		
+		userDao = new UserDaoLogic();
+	}
+
+	@Test
+	public void testRetrieveUser() {
+		
+		User user = userDao.retrieveUser("yun");
+		
+		System.out.println("UserId: "+user.getUserId());
+		System.out.println("LoginId: "+user.getLoginId());
+		System.out.println("Name: "+user.getName());
+		System.out.println("NickName: "+user.getNickName());
+		System.out.println("Password: "+user.getPassword());
+		System.out.println("Age: "+user.getAge());
+		System.out.println("Address: "+user.getAddress());
+		System.out.println("Category: " + user.getCategory());
+		System.out.println("Email: "+user.getEmail());
+		
+		assertNotNull(user);
+	}
+
+	@Test
+	public void testRetrieveUserAll() {
+		
+		List<User> users = userDao.retrieveUserAll();
+		
+		for (User user : users) {
+			System.out.println(user.getName());
+		}
+		
+		assertFalse(users.isEmpty());
+	}
+
+	@Test
+	public void testRegisterUser() {
+		
+		User user = new User();
+		
+		user.setAddress("경상북도 포항시 북구 상도동");
+		user.setAge(27);
+		user.setEmail("yun@gmail.com");
+		user.setLoginId("yun");
+		user.setName("윤지미");
+		user.setNickName("윤짐");
+		user.setPassword("1234");
+		user.setCategory(Category.SPORTS);
+		
+		userDao.registerUser(user);
+		
+		assertNotNull(userDao.retrieveUser(user.getLoginId()));
+	}
+
+	@Test
+	public void testModifyUser() {
+		
+		User user = userDao.retrieveUser("yun1");
+
+		System.out.println("-----------수정전-----------");
+		System.out.println("UserId: "+user.getUserId());
+		System.out.println("LoginId: "+user.getLoginId());
+		System.out.println("Name: "+user.getName());
+		System.out.println("NickName: "+user.getNickName());
+		System.out.println("Password: "+user.getPassword());
+		System.out.println("Age: "+user.getAge());
+		System.out.println("Address: "+user.getAddress());
+		System.out.println("Category: " + user.getCategory());
+		System.out.println("Email: "+user.getEmail());
+		
+		user.setAddress("서울특별시 금천구 가산동");
+		user.setAge(50);
+		user.setEmail("lee@gmail.com");
+		user.setNickName("재영2");
+		user.setPassword("1234");
+		
+		userDao.modifyUser(user);		
+		
+		User modifyUser = userDao.retrieveUser("yun1");
+		
+		System.out.println("-----------수정후-----------");
+		System.out.println("UserId: "+modifyUser.getUserId());
+		System.out.println("LoginId: "+modifyUser.getLoginId());
+		System.out.println("Name: "+modifyUser.getName());
+		System.out.println("NickName: "+modifyUser.getNickName());
+		System.out.println("Password: "+modifyUser.getPassword());
+		System.out.println("Age: "+modifyUser.getAge());
+		System.out.println("Address: "+modifyUser.getAddress());
+		System.out.println("Category: " + modifyUser.getCategory());
+		System.out.println("Email: "+modifyUser.getEmail());
+		
+		assertNotEquals(user, modifyUser);
+	}
+
+}

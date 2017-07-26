@@ -1,0 +1,86 @@
+package chat.controller;
+
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import chat.domain.Message;
+import chat.domain.Room;
+import chat.domain.RoomEntry;
+import chat.domain.User;
+import chat.service.RoomEntryService;
+import chat.service.RoomService;
+import chat.service.UserService;
+import message.service.MessageService;
+import message.service.MessageServiceLogic;
+
+@Controller
+@RequestMapping("/roomEntry")
+public class RoomEntryController {
+
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private RoomService roomService;
+
+	@Autowired
+	private RoomEntryService roomEntryService;
+
+	MessageService messageService = new MessageServiceLogic();
+	
+	@RequestMapping("/joinRoom.do")
+	public ModelAndView joinRoom(String roomNumber, String loginId) {
+		
+		List<Message> messageList = messageService.retrieveMessage(roomNumber, "1");
+		Room room = roomService.retrieveRoom(roomNumber);
+		User user = userService.retrieveUser(loginId);
+		
+		System.out.println("room notice "+room.getNotice());
+		ModelAndView mav = new ModelAndView();
+		Collections.reverse(messageList);
+		mav.addObject("room",room);
+		mav.addObject("user",user);
+		mav.addObject("roomNumber",roomNumber);
+		mav.addObject("messageList",messageList);
+		mav.setViewName("/views/chating.jsp");
+		return mav;
+		
+	}
+
+	@RequestMapping("/exitRoom.do")
+	public String exitRoom(String roomNumber, String loginId) {
+		
+		
+		List<RoomEntry> roomEntryList = roomEntryService.retrieveRoomEntryByRoomNumber(roomNumber);
+		
+		for(RoomEntry roomEntry : roomEntryList){
+			if(roomEntry.getUser().getLoginId().equals(loginId)){
+				roomEntryService.removeRoomEntry(roomEntry);
+				
+			}
+			else{
+				
+			}
+			
+		}
+
+		return "redirect:/";
+	}
+
+	@RequestMapping("/addList.do")
+	@ResponseBody
+	public List<Message> addlist(String page,String roomNumber){
+		
+		List<Message> messageList =messageService.retrieveMessage(roomNumber, page);
+		return messageList;
+	}
+	
+	
+	
+}
+

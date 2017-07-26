@@ -1,0 +1,302 @@
+package chat.controller;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
+import chat.domain.Message;
+import chat.domain.Room;
+import chat.domain.RoomEntry;
+import chat.domain.User;
+import chat.service.RoomEntryService;
+import chat.service.RoomService;
+import chat.service.UserService;
+import message.service.MessageService;
+import message.service.MessageServiceLogic;
+
+@Controller
+@RequestMapping("/roomEntry")
+public class RoomEntryController {
+
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private RoomService roomService;
+
+	@Autowired
+	private RoomEntryService roomEntryService;
+
+	MessageService messageService = new MessageServiceLogic();
+
+	
+	@RequestMapping("/joinRoom.do")
+	public ModelAndView joinRoom(String roomNumber, String loginId) {
+
+		List<Message> messageList = messageService.retrieveMessage(roomNumber, "1");
+
+		Room room = roomService.retrieveRoom(roomNumber);
+
+		User user = userService.retrieveUser(loginId);
+
+		boolean isAdmin = false;
+		if (loginId.equals(room.getAdmin().getLoginId())) {
+			isAdmin = true;
+		}
+
+		List<String> adminList = new ArrayList<>();
+
+		List<RoomEntry> roomEntryAll = roomEntryService.retrieveAllRoomEntry();
+		for (RoomEntry result : roomEntryAll) {
+			Room roomd = roomService.retrieveRoom(result.getRoom().getRoomNumber());
+			adminList.add(roomd.getAdmin().getLoginId());
+		}
+
+		List<String> uniqueItems = new ArrayList<String>(new HashSet<String>(adminList));
+
+		Map<String, String> adminMap = new HashMap<>();
+		for (String str : uniqueItems) {
+			adminMap.put(str, "true");
+		}
+
+		Collections.reverse(messageList);
+
+		ModelAndView mav = new ModelAndView();
+
+		mav.addObject("adminMap", adminMap);
+		mav.addObject("isAdmin", isAdmin);
+		mav.addObject("room", room);
+		mav.addObject("user", user);
+		mav.addObject("roomNumber", roomNumber);
+		mav.addObject("messageList", messageList);
+
+		List<RoomEntry> roomEntryList = roomEntryService.retrieveRoomEntryByRoomNumber(roomNumber);
+
+		if (roomEntryList.size() == 0) {
+
+			RoomEntry roomEntry = new RoomEntry();
+			room = roomService.retrieveRoom(roomNumber);
+
+			user = userService.retrieveUser(loginId);
+
+			roomEntry.setRoom(room);
+			roomEntry.setUser(user);
+			roomEntryService.registerRoomEntry(roomEntry);
+			mav.addObject("roomEntry", roomEntry);
+			mav.setViewName("/views/chating.jsp");
+
+		} else if (roomEntryList.size() != 0) {
+
+			for (RoomEntry roomEntryResult : roomEntryList) {
+
+				if (roomEntryService.checkedRoomUserByRoomNumber(roomNumber, loginId)) {
+
+					mav.addObject("roomEntry", roomEntryResult);
+					mav.setViewName("/views/chating.jsp");
+
+					break;
+
+				} else {
+
+					roomEntryResult.setRoom(room);
+					roomEntryResult.setUser(user);
+					roomEntryService.registerRoomEntry(roomEntryResult);
+					mav.addObject("roomEntry", roomEntryResult);
+					mav.setViewName("/views/chating.jsp");
+					break;
+				}
+			}
+
+		}
+		return mav;
+	}
+
+	@ResponseBody
+	@RequestMapping("/exitRoom.do")
+	public void exitRoom(String roomNumber, String loginId, String adminId, boolean roomRemove) {
+		List<RoomEntry> roomEntryList = roomEntryService.retrieveRoomEntryByRoomNumber(roomNumber);
+
+		System.out.println("RoomNumber"+roomNumber);
+		System.out.println("loginId"+loginId);
+		System.out.println("adminId"+adminId);
+		System.out.println("roomRemove"+roomRemove);
+		
+		
+		for (RoomEntry roomEntry : roomEntryList) {
+			if (roomEntry.getUser().getLoginId().equals(loginId)
+					&& roomEntry.getRoom().getRoomNumber().equals(roomNumber)) {
+				roomEntryService.removeRoomEntry(roomEntry);
+			}
+		}
+
+		if (loginId.equals(adminId)) {
+			Room room = roomService.retrieveRoom(roomNumber);
+			User user = userService.retrieveUser(loginId);
+			room.setAdmin(user);
+			roomEntryService.updateAdmin(room);
+		}
+		
+		if (roomRemove) {
+			System.out.println("exitRoom" + roomRemove);
+			Room removeRoom = roomService.retrieveRoom(roomNumber);
+			User user = new User();
+			user.setLoginId("deleteAdmin");
+			removeRoom.setAdmin(user);
+			removeRoom.setNotice("");
+			removeRoom.setDeleteYn(true);
+			roomService.modifyRoom(removeRoom);
+		}
+	}
+
+	@RequestMapping("/joinRoomUserList.do")
+	public ModelAndView joinRoomUserList(String roomNumber) {
+
+		List<RoomEntry> roomEntryList = roomEntryService.retrieveRoomEntryByRoomNumber(roomNumber);
+
+		for (RoomEntry roomEntry : roomEntryList) {
+			String loginId = roomEntry.getUser().getLoginId();
+			User user = userService.retrieveUser(loginId);
+			roomEntry.setUser(user);
+		}
+
+		List<String> adminList = new ArrayList<>();
+
+		List<RoomEntry> roomEntryAll = roomEntryService.retrieveAllRoomEntry();
+		for (RoomEntry result : roomEntryAll) {
+			Room room = roomService.retrieveRoom(result.getRoom().getRoomNumber());
+			adminList.add(room.getAdmin().getLoginId());
+		}
+
+		List<String> uniqueItems = new ArrayList<String>(new HashSet<String>(adminList));
+
+		Map<String, String> adminMap = new HashMap<>();
+		for (String str : uniqueItems) {
+			adminMap.put(str, "true");
+		}
+
+		ModelAndView mav = new ModelAndView();
+
+
+		Room room = roomService.retrieveRoom(roomNumber);
+		mav.addObject("roomEntryList", roomEntryList);
+		mav.addObject("adminMap", adminMap);
+		mav.addObject("room", room);
+		mav.setViewName("/views/grant.jsp");
+
+		
+		return mav;
+
+	}
+	@ResponseBody
+	@RequestMapping("/chkJoinRoom")
+	public int chkJoinRoom(String loginId){
+		int count = 0;
+		List<RoomEntry> entryList = roomEntryService.retrieveRoomEntryByLoginId(loginId);
+		count = entryList.size();
+		
+		return count;
+	}
+
+	@ResponseBody
+	@RequestMapping("/grant.do")
+	public boolean grant(String loginId, String roomNumber) {
+		Room room = roomService.retrieveRoom(roomNumber);
+		User user = userService.retrieveUser(loginId);
+		room.setAdmin(user);
+		System.out.println("grant.do "+loginId);
+
+		List<String> adminList = new ArrayList<>();
+
+		List<RoomEntry> roomEntryAll = roomEntryService.retrieveAllRoomEntry();
+		for (RoomEntry result : roomEntryAll) {
+			Room roomd = roomService.retrieveRoom(result.getRoom().getRoomNumber());
+			adminList.add(roomd.getAdmin().getLoginId());
+		}
+
+		List<String> uniqueItems = new ArrayList<String>(new HashSet<String>(adminList));
+
+		for (String str : uniqueItems) {
+			if (loginId.equals(str)) {
+				return true;
+			}
+		}
+		
+		List<RoomEntry> roomEntryRoom = roomEntryService.retrieveRoomEntryByRoomNumber(roomNumber);
+	    
+		for(RoomEntry entry : roomEntryRoom){
+			if(loginId.equals(entry.getUser().getLoginId())){
+				roomEntryService.updateAdmin(room);
+				return false;
+			}
+		}
+		
+		return true;
+	
+	}
+
+	@RequestMapping("grantAfterExit.do")
+	@ResponseBody
+	public void grantAfterExit(String loginId, String roomNumber,String adminId) {
+
+		Room room = roomService.retrieveRoom(roomNumber);
+		User user = userService.retrieveUser(loginId);
+		room.setAdmin(user);
+
+		roomEntryService.updateAdmin(room);
+
+		List<RoomEntry> roomEntryList = roomEntryService.retrieveRoomEntryByRoomNumber(roomNumber);
+
+		for (RoomEntry roomEntry : roomEntryList) {
+			if (roomEntry.getUser().getLoginId().equals(adminId)
+					&& roomEntry.getRoom().getRoomNumber().equals(roomNumber)) {
+				System.out.println("remove asda");
+				roomEntryService.removeRoomEntry(roomEntry);
+			}
+		}
+	}
+
+	@RequestMapping("/addList.do")
+	@ResponseBody
+	public List<Message> addlist(String page, String roomNumber) {
+		List<Message> messageList = messageService.retrieveMessage(roomNumber, page);
+		return messageList;
+	}
+
+	@RequestMapping("/userInfo.do")
+	@ResponseBody
+	public List<RoomEntry> addUserInfo(String roomNumber) {
+		List<RoomEntry> roomEntry = roomEntryService.retrieveRoomEntryByRoomNumber(roomNumber);
+		return roomEntry;
+	}
+
+	@RequestMapping("/viewUserInfo.do")
+	public ModelAndView viewUserInfo(String roomNumber, String loginId) {
+		ModelAndView mav = new ModelAndView();
+		Room room = roomService.retrieveRoom(roomNumber);
+		User user = userService.retrieveUser(loginId);
+		List<RoomEntry> roomEntryList = roomEntryService.retrieveRoomEntryByRoomNumber(roomNumber);
+
+		mav.addObject("user", user);
+		mav.addObject("room", room);
+		mav.addObject("roomEntryList", roomEntryList);
+		mav.setViewName("/views/userList.jsp");
+		return mav;
+	}
+
+	@RequestMapping("/chatUserInfo.do")
+	@ResponseBody
+	public User chatUserInfo(String loginId) {
+		User user = userService.retrieveUser(loginId);
+		return user;
+	}
+
+}

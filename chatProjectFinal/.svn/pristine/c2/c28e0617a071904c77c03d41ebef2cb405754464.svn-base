@@ -1,0 +1,341 @@
+/* 채팅방 */  
+  html, body 
+    {
+      height:100%;
+    }
+  
+  .notice {
+    position: absolute;
+    width:100%;
+    z-index: 20;
+    opacity: 0.9;
+    display: none;
+  }
+  
+  #roomTitle{
+    padding:12px; 
+    width:100%; 
+    position:fixed;
+    z-index: 20;
+  }
+  
+  a{
+    text-decoration: none;
+  }
+  .jstalktheme
+  {
+    background-color: #9bbad8;
+    height: 100%;
+  }
+
+  .jstalktheme .clear
+  {
+    clear: both;
+  }
+
+  .jstalktheme .blank
+  {
+    clear: both;
+    height: 4px;
+  }
+
+  .jstalktheme .msg
+  {
+    height: calc(100% - 107px);
+    overflow-y: scroll;
+    font-size: 12px;
+    padding-top: 50px;    
+  }
+  .jstalktheme .noticeBtn{
+    padding: 5px; 10px 0 0;
+    height: 30px;
+
+  }
+
+  .jstalktheme .msg .time
+  {
+    font-size: 10px;
+  }
+
+  .jstalktheme .msg .mytalk
+  {
+    float: right;
+    width: 100%;
+    padding: 0 10px 0 0;
+    
+  }
+
+  .jstalktheme .msg .mytalk .time
+  {
+    float: right;
+    bottom: 0;
+  }
+
+  .jstalktheme .msg .mytalk .a
+  {
+    float: right;
+    position: relative;
+    min-height: 24px;
+    max-width: calc(100% - 64px);
+    left: 2px;
+    background-color: #ffec42;
+    border-radius: 3px;
+    z-index: 2;
+    padding: 0px 4px 0px 4px;
+    word-break: break-all;
+  }
+
+  .jstalktheme .msg .mytalk .b
+  {
+    float: right;
+    position: relative;
+    width: 8px;
+    height: 22px;
+    background: url('../img/chat_balloon_yellow.right.png');
+    z-index: 1;
+  }
+
+  .jstalktheme .msg .othertalk
+  {
+    float: left;
+    width: 100%;
+    padding: 0 0 0 10px;
+  }
+
+  .jstalktheme .msg .othertalk .profile_image
+  {
+    float: left;
+    width: 40px;
+    height: 40px;
+    border-radius: 14px; 
+  }
+
+  .jstalktheme .msg .othertalk .box
+  {
+    float: left;
+    width: calc(100% - 48px);
+  }
+
+  .jstalktheme .msg .othertalk .box .profile_name
+  {
+    font-size: 12px;
+  }
+
+  .jstalktheme .msg .othertalk .box .a
+  {
+    float: left;
+    position: relative;
+    width: 8px;
+    height: 22px;
+    background: url('../img/chat_balloon_white.left.png');
+    z-index: 1;
+  }
+
+  .jstalktheme .msg .othertalk .box .b
+  {
+    float: left;
+    position: relative;
+    min-height: 24px;
+    max-width: calc(100% - 64px);
+    left: -2px;
+    background-color: #ffffff;
+    border-radius: 3px;
+    z-index: 2;
+    padding: 0px 4px 0px 4px;
+    word-break: break-all;
+  }
+
+  .jstalktheme .msg .othertalk .box .time
+  {
+    float: left;
+  }
+
+  .jstalktheme .sendmsg
+  {
+
+  }
+
+  .jstalktheme .sendmsg .textarea
+  {
+    float: left;
+    width: calc(100% - 68px);
+    height: 64px;
+    border-radius: 8px 0px 0px 8px;
+    margin: 0px 0px 0px 0px;
+    padding: 2px 2px 2px 2px;
+    resize: none;
+  }
+
+  .jstalktheme .sendmsg .button
+  {
+    float: right;
+    width: 62px;
+    height: 68px;
+    background-color: #ffec42;
+    border-radius: 0px 8px 8px 0px;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    text-align: center;
+    display: table;
+    cursor: pointer;
+  }
+
+  .jstalktheme .sendmsg .button p
+  {
+    display: table-cell;
+    vertical-align: middle;
+  }
+
+/* 채팅방 설정 */
+    .jstalkthemeInfo {
+      background-color: white;
+    }
+    
+    #ttalign {
+      font-size: 20px;
+    }
+    
+    #create {
+      width: 100%;
+      margin-left: 100px;
+    }
+    
+    /*주제 선택 w3 수정*/
+    
+    .w3-selectedit {
+      padding: 9px 0;
+      width: 20%;
+      color: #000;
+      border: 1px solid transparent;
+      border-bottom: 1px solid #009688
+    }
+    
+    .editbutton{
+       margin-left: 100px;
+    }
+  
+    #roomTitle{
+      padding:12px; 
+      width:100%; 
+      position:fixed;
+      z-index: 20;
+    }
+
+    .jstalkthemeInfo .infoContainer
+    {
+      overflow-y: visible;
+      height: 100%;
+    }
+    #userName{
+      max-width:100px
+
+    }
+/* 파일첨부 */
+  .filebox input[type="file"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip:rect(0,0,0,0);
+    border: 0;
+  }
+
+  .filebox label {
+    display: inline-block;
+    padding: .5em .75em;
+    color: #999;
+    font-size: inherit;
+    line-height: normal;
+    vertical-align: middle;
+    background-color: #fdfdfd;
+    cursor: pointer;
+    border: 1px solid #ebebeb;
+    border-bottom-color: #e2e2e2;
+    border-radius: .25em;
+  }
+
+  /* named upload */
+  .filebox .upload-name {
+    display: inline-block;
+    padding: .5em .75em;  /* label의 패딩값과 일치 */
+    font-size: inherit;
+    font-family: inherit;
+    line-height: normal;
+    vertical-align: middle;
+    background-color: #f5f5f5;
+    border: 1px solid #ebebeb;
+    border-bottom-color: #e2e2e2;
+    border-radius: .25em;
+    -webkit-appearance: none; /* 네이티브 외형 감추기 */
+    -moz-appearance: none;
+    appearance: none;
+  }
+  
+  /* 알람 css */
+  
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 80px;
+  height: 34px;
+}
+
+.switch input {display:none;}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  /*스위치 아이콘 이동 범위 */
+  transform: translateX(46px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+  
+ /*파일첨부리스트*/ 
+ #fileList{
+   position: absolute;
+   top: 10px;
+   left:40%;
+   max-width:320px;
+ }  

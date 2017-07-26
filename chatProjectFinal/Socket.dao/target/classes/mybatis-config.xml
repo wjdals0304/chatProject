@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- type을 alias를 사용해서 짧게 쓰겠다. -->
+	<typeAliases>
+		<typeAlias type="chat.domain.Category" alias="Category" />
+		<typeAlias type="chat.domain.User" alias="User"/>
+		<typeAlias type="chat.domain.Room" alias="Room"/>
+		<typeAlias type="chat.domain.Message" alias="Message"/>
+		<typeAlias type="chat.domain.UserToUser" alias="UserToUser"/>
+		<typeAlias type="chat.domain.RoomEntry" alias="RoomEntry"/>
+		<typeAlias type="chat.domain.FileInfo" alias="FileInfo"/>
+		<typeAlias type="chat.handler.BooleanToYnHandler" alias="BooleanToYnHandler"/>
+		<typeAlias type="chat.handler.CategoryToCharHandler" alias="CategoryToCharHandler"/>
+		<typeAlias type="chat.handler.StringToNumberHandler" alias="StringToNumberHandler"/>
+	</typeAliases>
+	
+	<typeHandlers>
+		<typeHandler handler="chat.handler.BooleanToYnHandler" javaType="boolean" jdbcType="CHAR"/>
+		<typeHandler handler="chat.handler.CategoryToCharHandler" javaType="Category" jdbcType="CHAR"/>
+		<typeHandler handler="chat.handler.StringToNumberHandler" javaType="String" jdbcType="NUMERIC"/>
+	</typeHandlers>
+	
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="oracle.jdbc.driver.OracleDriver" />
+				<property name="url" value="jdbc:oracle:thin:@192.168.0.78:1521:xe" />
+				<property name="username" value="web" />
+				<property name="password" value="web" />
+			</dataSource>
+		</environment>
+	</environments>
+	
+	<mappers>
+		<mapper resource="mapper/UserMapper.xml" />
+		<mapper resource="mapper/RoomMapper.xml" />
+		<mapper resource="mapper/RoomEntryMapper.xml" />
+		<mapper resource="mapper/FileMapper.xml" />
+		<mapper resource="mapper/UserToUserMapper.xml" />
+	</mappers>
+	
+</configuration>

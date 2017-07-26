@@ -1,0 +1,97 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>채팅</title>
+ <%@include file ="/resources/common/head.jsp" %>
+<script>
+  $(document).ready(function(){
+      $(".noticeClose").click(function(){
+        $(".notice").css({"display":"none"});  
+        $(".noticeOpen").css({"display":"block"});
+      })
+      $(".noticeOpen").click(function(){
+        $(".notice").css("display","block");
+        $(".noticeOpen").css({"display":"none"});
+        
+      })
+   })
+</script>
+  <script>
+  $(document).ready(function(){
+  var fileTarget = $('.filebox .upload-hidden');
+
+  fileTarget.on('change', function(){  // 값이 변경되면
+    if(window.FileReader){  // modern browser
+      var filename = $(this)[0].files[0].name;
+    } 
+    else {  // old IE
+      var filename = $(this).val().split('/').pop().split('\\').pop();  // 파일명만 추출
+    }
+    
+    // 추출한 파일명 삽입
+    $(this).siblings('.upload-name').val(filename);
+  });
+}); 
+  </script>
+</head>
+<body>
+  
+  <div class="jstalktheme" style="height: 100%;" >
+    <div class="w3-container w3-light-grey w3-text-dark-grey w3-large" id="roomTitle">
+        <div class="w3-left"><span><b>가산디지털단지 맛집...</b>(20/100)</span></div>
+        <div class="w3-right w3-large">
+          <a href="#none"><span class="fa fa-bell"></span></a>&nbsp;
+          <a href="#none"><span class="fa fa-ellipsis-v"></span></a>
+        </div>
+      </div>
+    <div class="msg" id="chatMessage">
+      <div class="w3-card-4 notice">
+        <div class="w3-container w3-light-grey w3-medium">
+          <div class="w3-left">
+            <span class="fa fa-check"><b>공지사항</b></span>
+          </div>
+          <div class="w3-right">
+            <a href="#none"><span class="fa fa-pencil"></span></a>&nbsp;
+            <a href="#none" class="noticeClose"><span class="fa fa-chevron-circle-up"></span></a>
+          </div>
+        </div>
+        <div class="w3-container w3-white">
+          <p class="w3-small">공지사항입니다!!!!!!!!!!!!!!!!!!!!!</p>
+        </div>
+      </div>
+      <div class="noticeBtn w3-right">
+        <a href="#none" class="noticeOpen fa fa-chevron-circle-down w3-xlarge"></a>
+      </div>
+      <!-- 대화들 -->
+      </div>
+    <div class="sendmsg"> 
+      <div class="w3-container w3-blue-grey">
+        <div class="filebox w3-left">
+          <label for="ex_filename">파일첨부</label> 
+          <input class="upload-name" value="파일선택" disabled="disabled">
+          <input type="file" id="ex_filename" class="upload-hidden"> 
+          <button class="w3-btn w3-white w3-round w3-text-grey">전송</button>
+          <a class="fa fa-files-o" href="#none">파일리스트</a>
+        </div>
+        <div class="w3-right w3-padding ">
+          
+        </div>
+      </div>
+      <textarea id="inputMessage" class="textarea"  > 
+      </textarea>
+
+      <div class="button"  id="send">
+      <p>전송</p>
+      </div>
+
+      <div class="clear">
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

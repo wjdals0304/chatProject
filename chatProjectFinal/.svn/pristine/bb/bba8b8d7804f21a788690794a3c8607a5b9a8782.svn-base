@@ -1,0 +1,235 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Simple Talk</title>
+<%@include file ="/resources/common/head.jsp" %>
+<script>   
+  $(document).ready(function(){
+      $(".infoBtn").click(function(){
+        $("#optionRoomInfo").css({"display":"block",
+                                  'top' : $(this).offset().top,
+                                  'left' : '45%'});  
+      })
+      $(".infoClose").click(function(){
+        $("#optionRoomInfo").css("display","none");
+      })
+  })
+</script>
+</head>
+<body>
+<!-- Links (sit on top) -->
+
+<%@include file ="/resources/common/navigation.jsp" %>
+<%@include file ="/resources/common/slide.jsp" %>
+<!-- Header with image -->
+
+
+<!-- Menu Container -->
+<div class="w3-container">
+  <div class="w3-content" style="max-width:700px">
+    <div class="w3-card-4" id="optionRoomInfo">
+      <div class="w3-container w3-indigo">
+        <span class="w3-large w3-padding">대화방 정보</span>
+        <a href="#none"class="fa fa-close w3-large infoClose" style="float:right;"></a>
+        <p><a href="#none"><span style="float:right; padding-bottom:5px;" class="w3-small fa fa-sign-in">&nbsp;&nbsp;입장</span></a>
+        </p>
+      </div>
+      <div class="userList w3-container w3-white w3-small" style="overflow-y: scroll; height:250px">
+        <div class="w3-panel w3-pale-green w3-leftbar w3-border-indigo">
+          <span>방장</span>
+        </div>
+        <ul class="w3-ul ">
+          <li>김하나</li>
+        </ul>
+        <div class="w3-panel w3-pale-green w3-leftbar w3-border-indigo">
+          <span>참여자</span>
+        </div>
+        <ul class="w3-ul ">
+          <li class="w3-light-grey">참여자</li>
+          <li><a href="#none">윤지미</a></li>
+          <li><a href="#none">양희정</a></li>
+          <li><a href="#none">박혜성</a></li>
+          <li><a href="#none">김정민</a></li>
+          <li><a href="#none">장재희</a></li>
+          <li><a href="#none">장선영</a></li>
+          <li><a href="#none">장선영</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="w3-row w3-padding" id="category">
+      <select class="w3-select-main w3-medium">
+        <option>전체주제</option>
+        <option>여행</option>
+        <option>맛집</option>
+        <option>공부</option>
+        <option>영화</option>
+        <option>자동차</option>
+        <option>주식</option>
+      </select>
+      <button class="w3-btn w3-blue w3-medium" style="float:right;"><b>방만들기</b></button>
+    </div>
+    <hr>
+    <div class="w3-row w3-padding" id="chatList">
+      
+      <!-- 내가 참여한 방 -->
+       <div class ="w3-panel w3-indigo">현재 참여한 채팅방</div>
+      <div >
+      <ul class="w3-ul w3-large">
+      <li>
+          <div class="w3-text-grey w3-small">
+            <span>맛집</span>
+            <a href="#none" class="fa fa-ellipsis-h infoBtn" aria-hidden="true" style="float: right;"></a>
+          </div>
+          <div class="w3-text-dark-grey w3-large">
+            <a href="#none"><span><b>가산디지털단지 맛집 추천해주세요~</b></span></a>
+            <span class="fa fa-lock"></span>
+          </div>
+          <div class="w3-text-grey">
+            <span class="w3-medium">(20/100)</span>&nbsp;&nbsp;
+            <span class="fa fa-user w3-medium" aria-hidden="true">&nbsp;이충렬</span>&nbsp;
+          </div>
+          <div>
+            <span><button class="w3-btn w3-blue-grey w3-tiny"><b>입장</b></button></span>
+          </div>
+        </li>
+        <li>
+          <div class="w3-text-grey w3-small">
+            <span>맛집</span>
+            <a href="#none" class="fa fa-ellipsis-h infoBtn" aria-hidden="true" style="float: right"></a>
+          </div>
+          <div class="w3-text-dark-grey w3-large">
+            <a href="#none"><span><b>가산디지털단지 맛집 추천해주세요~</b></span></a>
+          </div>
+          <div class="w3-text-grey">
+            <span class="w3-medium">(20/100)</span>&nbsp;&nbsp;
+            <span class="fa fa-user w3-medium" aria-hidden="true">&nbsp;이충렬</span>&nbsp;
+          </div>
+          <div>
+            <span><button class="w3-btn w3-blue-grey w3-tiny"><b>입장</b></button></span>
+          </div>
+        </li>
+        <li>
+          <div class="w3-text-grey w3-small">
+            <span>맛집</span>
+            <a href="#none" class="fa fa-ellipsis-h infoBtn" aria-hidden="true" style="float: right;"></a>
+          </div>
+          <div class="w3-text-dark-grey w3-large">
+            <a href="#none"><span><b>가산디지털단지 맛집 추천해주세요~</b></span></a>
+          </div>
+          <div class="w3-text-grey">
+            <span class="w3-medium">(20/100)</span>&nbsp;&nbsp;
+            <span class="fa fa-user w3-medium" aria-hidden="true">&nbsp;이충렬</span>&nbsp;
+          </div>
+          <div>
+            <span><button class="w3-btn w3-blue-grey w3-tiny"><b>입장</b></button></span>
+          </div>
+        </li>
+      </ul>
+      </div>
+      <!-- 채팅방리스트 -->
+      <div class ="w3-panel w3-indigo">채팅방 목록</div>
+      <div>
+      <ul class="w3-ul w3-large" >
+        <li>
+          <div class="w3-text-grey w3-small">
+            <span>맛집</span>
+            <a href="#none" class="fa fa-ellipsis-h infoBtn" aria-hidden="true" style="float: right;"></a>
+          </div>
+          <div class="w3-text-dark-grey w3-large">
+            <a href="#none"><span><b>가산디지털단지 맛집 추천해주세요~</b></span></a>
+            <span class="fa fa-lock"></span>
+          </div>
+          <div class="w3-text-grey">
+            <span class="w3-medium">(20/100)</span>&nbsp;&nbsp;
+            <span class="fa fa-user w3-medium" aria-hidden="true">&nbsp;이충렬</span>&nbsp;
+          </div>
+          <div>
+            <span><button class="w3-btn w3-blue-grey w3-tiny"><b>입장</b></button></span>
+          </div>
+        </li>
+        <li>
+          <div class="w3-text-grey w3-small">
+            <span>맛집</span>
+            <a href="#none" class="fa fa-ellipsis-h infoBtn" aria-hidden="true" style="float: right"></a>
+          </div>
+          <div class="w3-text-dark-grey w3-large">
+            <a href="#none"><span><b>가산디지털단지 맛집 추천해주세요~</b></span></a>
+          </div>
+          <div class="w3-text-grey">
+            <span class="w3-medium">(20/100)</span>&nbsp;&nbsp;
+            <span class="fa fa-user w3-medium" aria-hidden="true">&nbsp;이충렬</span>&nbsp;
+          </div>
+          <div>
+            <span><button class="w3-btn w3-blue-grey w3-tiny"><b>입장</b></button></span>
+          </div>
+        </li>
+        <li>
+          <div class="w3-text-grey w3-small">
+            <span>맛집</span>
+            <a href="#none" class="fa fa-ellipsis-h infoBtn" aria-hidden="true" style="float: right;"></a>
+          </div>
+          <div class="w3-text-dark-grey w3-large">
+            <a href="#none"><span><b>가산디지털단지 맛집 추천해주세요~</b></span></a>
+          </div>
+          <div class="w3-text-grey">
+            <span class="w3-medium">(20/100)</span>&nbsp;&nbsp;
+            <span class="fa fa-user w3-medium" aria-hidden="true">&nbsp;이충렬</span>&nbsp;
+          </div>
+          <div>
+            <span><button class="w3-btn w3-blue-grey w3-tiny"><b>입장</b></button></span>
+          </div>
+        </li>
+        <li>
+          <div class="w3-text-grey w3-small">
+            <span>맛집</span>
+            <a href="#none" class="fa fa-ellipsis-h infoBtn" aria-hidden="true" style="float: right;"></a>
+          </div>
+          <div class="w3-text-dark-grey w3-large">
+            <a href="#none"><span><b>가산디지털단지 맛집 추천해주세요~</b></span></a>
+          </div>
+          <div class="w3-text-grey">
+            <span class="w3-medium">(20/100)</span>&nbsp;&nbsp;
+            <span class="fa fa-user w3-medium" aria-hidden="true">&nbsp;이충렬</span>&nbsp;
+          </div>
+          <div>
+            <span><button class="w3-btn w3-blue-grey w3-tiny"><b>입장</b></button></span>
+          </div>
+        </li>
+        <li>
+          <div class="w3-text-grey w3-small">
+            <span>맛집</span>
+            <a href="#none" class="fa fa-ellipsis-h infoBtn" aria-hidden="true" style="float: right;"></a>
+          </div>
+          <div class="w3-text-dark-grey w3-large">
+            <a href="#none"><span><b>가산디지털단지 맛집 추천해주세요~</b></span></a>
+          </div>
+          <div class="w3-text-grey">
+            <span class="w3-medium">(20/100)</span>&nbsp;&nbsp;
+            <span class="fa fa-user w3-medium" aria-hidden="true">&nbsp;이충렬</span>&nbsp;
+          </div>
+          <div>
+            <span><button class="w3-btn w3-blue-grey w3-tiny"><b>입장</b></button></span>
+          </div>
+        </li>
+      </ul>
+    </div>
+    </div>
+    <div class="w3-row w3-padding" id="listMore">
+      <span><button class="w3-btn-block w3-blue w3-medium"><b>더보기(5/124)</b></button></span>
+    </div>
+    <div class="w3-tooltip w3-center">
+      <a class="w3-text-dark-grey" href="#home"><span class="w3-xlarge">
+      <i class="fa fa-chevron-circle-up"></i></span></a>
+    </div>
+  </div>
+<!-- End page content -->
+</div>
+
+
+<!--Footer link-->
+<%@include file ="/resources/common/footer.jsp" %>
+
+</body>
+</html>

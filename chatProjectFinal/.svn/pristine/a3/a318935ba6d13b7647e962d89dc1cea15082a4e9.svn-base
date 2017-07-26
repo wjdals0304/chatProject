@@ -1,0 +1,15 @@
+package chat.service;
+
+import java.util.List;
+
+import chat.domain.File;
+
+public interface FileService {
+
+void registerFile(File file);
+	
+	List<File> retrieveFileByRoomNumber(String roomNumber);
+	
+	void removeFile(String roomNumber);
+	
+}

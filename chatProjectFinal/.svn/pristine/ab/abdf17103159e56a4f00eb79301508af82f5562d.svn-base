@@ -1,0 +1,19 @@
+package chat.dao;
+
+import java.util.HashMap;
+import java.util.List;
+
+import chat.domain.User;
+
+
+public interface UserDao {
+
+	User retrieveUser(String loginId);
+	
+	List<User> retrieveUserAll();
+	
+	void modifyUser(User user);
+	
+	List<User> retrieveEqualRoomUser(HashMap<String, Object> map);
+	
+}

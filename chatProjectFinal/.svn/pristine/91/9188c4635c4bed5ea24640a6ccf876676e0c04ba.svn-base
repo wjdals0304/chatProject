@@ -1,0 +1,258 @@
+package chat.controller;
+
+import java.util.List;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import chat.domain.Join;
+import chat.domain.Room;
+import chat.domain.User;
+import chat.service.RoomService;
+import chat.service.UserService;
+
+@Controller
+@RequestMapping("/chat")
+public class ChatRoomController {
+
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private RoomService roomService;
+
+	@RequestMapping("/join.do")
+	public ModelAndView joinChatRoom(HttpSession session, String roomNumber) {
+
+		// 굳이 세션에 저장해도 될 ID와 roomNumber를 이렇게 전송하는게 맞는가?
+		// 여기서 유저랑 roomNumber 이용해서 user update
+		String loginId = (String) session.getAttribute("loginId");
+		boolean in = true;
+
+		/*List<Join> joinList = roomService.retrieveAllJoin();
+		for (Join joins : joinList) {
+
+			if (joins.getLoginId().equals(loginId)) {
+				String joinRoom = joins.getRoomNumber();
+
+				System.out.println("방입장 - 입장방 번호 : " + roomNumber + "테이블 번호: " + joinRoom);
+				if (!roomNumber.equals(joinRoom)) {
+
+					Join join = new Join();
+					join.setLoginId(loginId);
+					join.setRoomNumber(roomNumber);
+					roomService.createJoin(join);
+				}
+			}
+		}*/
+		
+		List<Join> inUsers = roomService.retrieveByRoomNumber(roomNumber);
+		for(Join chkId : inUsers){
+			if(loginId.equals(chkId.getLoginId())){
+				in = false;
+			}
+		}
+		
+		if(in){
+			Join join = new Join();
+			join.setLoginId(loginId);
+			join.setRoomNumber(roomNumber);
+			roomService.createJoin(join);
+		}
+		
+
+		User user = userService.retrieveUser(loginId);
+		// 갱신 완료 loginId, roomNumber addObject로 등록
+
+		String name = user.getName();
+
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("name", name);
+		mav.addObject("roomNumber", roomNumber);
+		mav.setViewName("/views/chat.jsp");
+		return mav;
+	}
+
+	@RequestMapping("/roomList.do")
+	public ModelAndView spreadRoom(HttpSession session) {
+
+		String loginId = (String) session.getAttribute("loginId");
+		boolean exgistAdmin = false;
+		List<Join> chkUsers = null;
+
+		List<Room> roomList = roomService.retrieveRoomAll();
+		for (Room findRoom : roomList) {
+
+			if (loginId.equals(findRoom.getAdmin())) {
+				exgistAdmin = true;
+			}
+
+			chkUsers = roomService.retrieveByRoomNumber(findRoom.getRoomNumber());
+			findRoom.setInUsers(chkUsers.size());
+			for(Join c : chkUsers){
+				System.out.println(c.getLoginId());
+			}
+	
+		}
+
+		System.out.println("생성한 방이 있나? " + exgistAdmin);
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("chkUsers",chkUsers);
+		mav.addObject("roomList", roomList);
+		mav.addObject("exgistAdmin", exgistAdmin);
+		mav.setViewName("/views/main.jsp");
+		return mav;
+
+	}
+
+	@RequestMapping(value = "/create.do", method = RequestMethod.GET)
+	public String createRoomByClick() {
+
+		// 여기서는 페이지 이동만.
+		return "/views/createRoom.jsp";
+
+	}
+
+	@RequestMapping(value = "/create.do", method = RequestMethod.POST)
+	public String createRoomByObject(HttpSession session, Room room) {
+
+		String loginId = (String) session.getAttribute("loginId");
+		System.out.println(loginId + " " + room.getTitle());
+
+		// 방만든 유저가 방장
+		Room createRoom = new Room();
+		createRoom.setAdmin(loginId);
+		createRoom.setTitle(room.getTitle());
+		createRoom.setCategory(room.getCategory());
+		createRoom.setLimitUsers(room.getLimitUsers());
+		createRoom.setNotice(room.getNotice());
+
+		System.out.println(room.getRoomNumber() + " " + room.getAdmin() + " " + room.getTitle());
+
+		roomService.createRoom(createRoom);
+
+		User user = userService.retrieveUser(loginId);
+		System.out.println(user.getLoginId() + " " + user.getName());
+
+		List<Room> roomList = roomService.retrieveRoomAll();
+
+		for (Room findroom : roomList) {
+			if (loginId.equals(findroom.getAdmin())) {
+				user.setRoomNumber(findroom.getRoomNumber());
+				Join join = new Join();
+				join.setLoginId(loginId);
+				join.setRoomNumber(findroom.getRoomNumber());
+
+				roomService.createJoin(join);
+			}
+		}
+		userService.modifyUser(user);
+
+		System.out.println(user.getLoginId() + " " + user.getName() + " " + user.getRoomNumber());
+
+		// 생성하면 생성한 금마는 admin에 넣어줘야한다.?
+		userService.retrieveUser((String) session.getAttribute("loginId"));
+
+		return "redirect:/chat/roomList.do";
+	}
+
+	@RequestMapping("/login.do")
+	public String loginChatSite(HttpSession session, String loginId, String password, Model model) {
+
+		session.setAttribute("loginId", loginId);
+		session.setAttribute("password", password);
+		System.out.println("ID : " + loginId + " PW : " + password);
+
+		List<Room> roomList = roomService.retrieveRoomAll();
+
+		boolean find = false;
+
+		for (Room findRoom : roomList) {
+
+			if (loginId.equals(findRoom.getAdmin())) {
+				find = true;
+			}
+		}
+		System.out.println("생성한 방이 있나? " + find);
+
+		model.addAttribute("find", find);
+
+		return "/chat/roomList.do";
+	}
+
+	@RequestMapping("/exitRoom.do")
+	public String exitRoom(HttpSession session, String roomNumber, Model model) {
+		String loginId = (String) session.getAttribute("loginId");
+
+		Room room = roomService.retrieveRoom(roomNumber);
+
+		String admin = null;
+		if (loginId.equals(room.getAdmin())) {
+			admin = room.getAdmin();
+		}
+
+		System.out.println("나가기 아이디 : " + loginId);
+		System.out.println("방장아이디 : " + room.getAdmin());
+
+		if (loginId.equals(admin)) {
+			List<User> eqRoomUser = userService.retrieveEqualRoomUser(loginId, roomNumber);
+			if (eqRoomUser.size() != 0) {
+				admin = room.getAdmin();
+				model.addAttribute("users", eqRoomUser);
+				model.addAttribute("room", room);
+
+				return "/views/roomUsers.jsp";
+			}
+
+		}
+
+		roomService.deleteJoin(loginId, roomNumber);
+		roomService.deleteRoom(loginId, roomNumber);
+
+		return "redirect:/chat/roomList.do";
+
+	}
+
+	@RequestMapping("/chkAdmin.do")
+	@ResponseBody
+	public boolean chkAdmin(HttpSession session, String loginId) {
+
+		List<Room> roomList = roomService.retrieveRoomAll();
+
+		for (Room findroom : roomList) {
+			if (loginId.equals(findroom.getAdmin())) {
+				return true;
+
+			}
+		}
+
+		return false;
+	}
+
+	@RequestMapping(value = "/commission.do", method = RequestMethod.GET)
+	public String commission(HttpSession session, String selectUser, String roomNumber) {
+		//
+		String loginId = (String) session.getAttribute("loginId");
+
+		System.out.println("위임 방번호 : " + roomNumber);
+		Room room = roomService.retrieveRoom(roomNumber);
+		room.setAdmin(selectUser);
+		room.setRoomNumber(roomNumber);
+
+		roomService.modifyRoom(room);
+
+		User user = userService.retrieveUser(loginId);
+		user.setRoomNumber("0");
+		userService.modifyUser(user);
+
+		return "/chat/roomList.do";
+
+	}
+
+}

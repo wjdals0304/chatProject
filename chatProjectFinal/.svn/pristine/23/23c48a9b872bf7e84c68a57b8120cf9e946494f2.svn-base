@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <!-- 이부분에서 mapper를 이용해서 interface를 명시해주어야 내가 그 해당 interface에 있는 걸 가져다
+ 		쓸 수 있다. -->
+<mapper namespace="chat.mapper.RoomDaoMapper">
+
+	<resultMap type="Room" id="room-resultMap">	
+		<result property="roomNumber" column="roomNumber"/>
+		<result property="admin.loginId" column="admin"/>
+		<result property="title" column="title"/>
+		<result property="category" column="category" typeHandler="CategoryToCharHandler"/>
+		<result property="limitUsers" column="limitUsers"/>
+		<result property="notice" column="notice"/>
+		<result property="secret" column="secret" typeHandler="BooleanToYnHandler"/>
+		<result property="password" column="password"/>
+		<result property="deleteYn" column="deleteYn" typeHandler="BooleanToYnHandler"/>
+		<result property="roomDate" column="roomDate"/>
+		<result property="contents" column="contents"/>
+	</resultMap>
+
+	<select id="retrieveRoom" parameterType="string" resultMap="room-resultMap">
+		 SELECT roomNumber, admin, title, category
+		 		,limitUsers, notice, secret, password
+		 		,deleteYn, roomDate, contents
+		   FROM ROOM_TB
+		  WHERE roomNumber = #{roomNumber}
+	</select>
+	
+	<select id="retrieveRoomByAdmin" parameterType="string" resultMap="room-resultMap">
+	
+		 SELECT roomNumber, admin, title, category
+		 		,limitUsers, notice, secret, password
+		 		,deleteYn, roomDate, contents
+		   FROM ROOM_TB
+		  WHERE admin = #{admin.loginId}
+	</select>
+	
+	<select id="retrieveRoomAllByRowNum" parameterType="map" resultMap="room-resultMap">
+		 SELECT roomNumber, admin, title, category
+		 		,limitUsers, notice, secret, password
+		 		,deleteYn, roomDate, contents
+		   FROM (SELECT  rownum rn, r.roomNumber, r.admin, r.title, r.category
+		 				,r.limitUsers, r.notice, r.secret, r.password
+		 				,r.deleteYn, r.roomDate, r.contents
+		 		   FROM	(SELECT  roomNumber, admin, title, category
+		 						,limitUsers, notice, secret, password
+		 						,deleteYn, roomDate, contents
+		 				   FROM  ROOM_TB
+		 	   			ORDER BY roomNumber desc) r )
+		  WHERE rn between #{startNum} and ${endNum}
+	</select>
+	
+	<select id="retrieveRoomByCategory" parameterType="map" resultMap="room-resultMap">
+		  SELECT roomNumber, admin, title, category
+		 		,limitUsers, notice, secret, password
+		 		,deleteYn, roomDate, contents
+		   FROM (SELECT  rownum rn, r.roomNumber, r.admin, r.title, r.category
+		 				,r.limitUsers, r.notice, r.secret, r.password
+		 				,r.deleteYn, r.roomDate, r.contents
+		 		   FROM	(SELECT  roomNumber, admin, title, category
+		 						,limitUsers, notice, secret, password
+		 						,deleteYn, roomDate, contents
+		 				   FROM  ROOM_TB
+		 				  WHERE category = #{category}
+		 	   			ORDER BY roomNumber desc) r )
+		  WHERE rn between #{startNum} and ${endNum}
+	</select>
+	
+	<select id="retrieveRoomByTitleForSearch" parameterType="map" resultMap="room-resultMap">
+		 SELECT roomNumber, admin, title, category
+		 		,limitUsers, notice, secret, password
+		 		,deleteYn, roomDate, contents
+		   FROM (SELECT  rownum rn, r.roomNumber, r.admin, r.title, r.category
+		 				,r.limitUsers, r.notice, r.secret, r.password
+		 				,r.deleteYn, r.roomDate, r.contents
+		 		   FROM	(SELECT  roomNumber, admin, title, category
+		 						,limitUsers, notice, secret, password
+		 						,deleteYn, roomDate, contents
+		 				   FROM  ROOM_TB
+		 				  WHERE title LIKE '%' ||  #{title} || '%'
+		 	   			ORDER BY roomNumber desc) r )
+		  WHERE rn between #{startNum} and ${endNum}
+	</select>
+
+	<insert id="registerRoom" parameterType="Room">
+		INSERT INTO ROOM_TB
+			( roomNumber, admin, title, category
+		 	  ,limitUsers, notice, secret, password
+		 	  ,deleteYn, contents )
+		VALUES
+			( room_tb_seq.nextval, #{admin.loginId}, #{title}, #{category}, #{limitUsers}
+			  ,#{notice}, #{secret,typeHandler=BooleanToYnHandler}, #{password}
+			  ,#{deleteYn,typeHandler=BooleanToYnHandler}, #{contents} )
+	</insert>
+	
+	<update id="modifyRoom" parameterType="Room">
+		UPDATE ROOM_TB
+		   SET admin = #{admin.loginId}
+			   ,title = #{title}
+			   ,category = #{category}
+			   ,limitUsers = #{limitUsers}
+			   ,notice = #{notice}
+			   ,secret = #{secret,typeHandler=BooleanToYnHandler}
+			   ,password = #{password,jdbcType=VARCHAR}
+			   ,deleteYn = #{deleteYn,typeHandler=BooleanToYnHandler}
+			   ,contents = #{contents}
+		 WHERE roomNumber = #{roomNumber}
+	</update>
+	
+</mapper>

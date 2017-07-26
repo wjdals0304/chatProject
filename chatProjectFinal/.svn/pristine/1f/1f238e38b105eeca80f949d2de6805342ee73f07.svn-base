@@ -1,0 +1,15 @@
+package chat.dao;
+
+import java.util.List;
+
+import chat.domain.File;
+
+public interface FileDao {
+
+	void registerFile(File file);
+	
+	List<File> retrieveFileByRoomNumber(String roomNumber);
+	
+	void removeFile(String roomNumber);
+	
+}

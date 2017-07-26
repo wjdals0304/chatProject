@@ -1,0 +1,302 @@
+package chat.controller;
+
+import java.util.List;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import chat.domain.Category;
+import chat.domain.Room;
+import chat.domain.RoomEntry;
+import chat.domain.User;
+import chat.service.RoomService;
+
+/**
+ * Room 에 대한 처리를 하는 컨트롤러
+ * @author Hyesung park
+ *
+ */
+@Controller
+@RequestMapping("/room")
+public class RoomController {
+
+	@Autowired
+	private RoomService roomService;
+
+	/**
+	 * 메인페이지 전체 방 목록 조회
+	 * @param session 유저정보
+	 * @param more 페이징 인덱스
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping("/roomList.do")
+	public String roomList(HttpSession session, String more, Model model) {
+		//
+		User user = (User) session.getAttribute("loginUser");
+
+		System.out.println("로그인아이디:" + user.getLoginId());
+		String loginId = user.getLoginId();
+
+		boolean inRoom = false;
+		List<Room> roomList = roomService.retrieveRoomAllByRowNum(more);
+		for (Room rooms : roomList) {
+			List<RoomEntry> entryUsers = rooms.getUsers();
+			for (RoomEntry users : entryUsers) {
+				System.out.println("참가유저:" + users.getUser().getLoginId());
+				System.out.println(loginId + "와 " + users.getUser().getLoginId() + "가 같은가?");
+				if (loginId.equals(users.getUser().getLoginId())) {
+					inRoom = true;
+				}
+			}
+		}
+		
+		
+		System.out.println("방에 속해 있나? " +inRoom);
+		model.addAttribute("inRoom", inRoom);
+		model.addAttribute("roomList", roomList);
+
+		return "/views/main.jsp";
+	}
+	
+	/**
+	 * 페이징 처리
+	 * @param more 페이징 인덱스
+	 * @param cate 선택한 카테고리
+	 * @return 
+	 */
+	@RequestMapping("/listMore.do")
+	@ResponseBody
+	public List<Room> moreRoomList(String more, String cate) {
+		
+		if (cate=="") {
+			List<Room> roomList = roomService.retrieveRoomAllByRowNum(more);
+			return roomList;
+		}
+		
+		Category category = Category.valueOf(cate);
+		List<Room> roomList = roomService.retrieveRoomByCategory(category, more);
+		return roomList;
+
+	}
+	
+	/**
+	 * 카테고리로 방 목록 조회
+	 * @param session 세션에 카테고리 담아줌
+	 * @param selectCategory 셀렉트박스에서 선택된 카테고리명
+	 * @param more 페이징 인덱스
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping("/roomListByCategory.do")
+	public String roomListByCategory(HttpSession session , String selectCategory, String more, Model model) {
+		System.out.println("넘어오는 카테고리 : " + selectCategory);
+		session.setAttribute("cate", selectCategory);
+		Category category = Category.valueOf(selectCategory);
+		System.out.println("카테고리 : " + category);
+
+		List<Room> roomList = roomService.retrieveRoomByCategory(category, more);
+		model.addAttribute("roomList", roomList);
+
+		return "/views/main.jsp";
+	}
+	
+	/**
+	 * createroom.jsp로 이동
+	 * @param session
+	 * @param room
+	 * @return
+	 */
+	@RequestMapping(value = "/registerRoom.do", method = RequestMethod.GET)
+	public String moveRegisterRoom() {
+
+		return "redirect:/views/createroom.jsp";
+	}
+
+	/**
+	 * 방 생성
+	 * @param session 유저정보
+	 * @param room 생성할 방 정보
+	 * @return
+	 */
+	@RequestMapping(value = "/registerRoom.do", method = RequestMethod.POST)
+	public String registerRoom(HttpSession session, Room room) {
+
+		/*
+		 * System.out.println(room.getCategory());
+		 * System.out.println(room.getContents());
+		 * System.out.println(room.getLimitUsers());
+		 * System.out.println(room.getNotice());
+		 * System.out.println(room.getPassword());
+		 * System.out.println(room.getTitle());
+		 */
+		User user = (User) session.getAttribute("loginUser");
+
+		System.out.println("로그인아이디:" + user.getLoginId());
+
+		Room regRoom = new Room();
+
+		regRoom.setAdmin(user);
+		Category category = room.getCategory();
+		regRoom.setCategory(category);
+		regRoom.setContents(room.getContents());
+		regRoom.setDeleteYn(false);
+		regRoom.setLimitUsers(room.getLimitUsers());
+		regRoom.setNotice(room.getNotice());
+		regRoom.setPassword(room.getPassword());
+		regRoom.setSecret(room.isSecret());
+		regRoom.setTitle(room.getTitle());
+
+		Room findRoom = roomService.retrieveRoomByAdmin(user.getLoginId());
+		if(findRoom!=null){
+			
+			return "redirect:/room/roomList.do";
+		}
+		roomService.registerRoom(regRoom);
+
+		return "/room/roomList.do";
+	}
+	
+	/**
+	 * 사용자가 생성한 방이 있는지 체크
+	 * @param loginId 로그인한 사용자 ID 값
+	 * @return 생성한 방이 있다면 true, 없다면 false
+	 */
+	@RequestMapping("/chkAdmin.do")
+	@ResponseBody
+	public boolean chkUserIsAdmin(String loginId) {
+
+		Room room = roomService.retrieveRoomByAdmin(loginId);
+
+		if (room != null) {
+			System.out.println(room.getTitle());
+			return true;
+		}
+
+		return false;
+	}
+	
+	/**
+	 * search.jsp 로 이동
+	 * @return
+	 */
+	@RequestMapping(value= "/search.do", method=RequestMethod.GET)
+	public String moveSearchRoomByKeyword(){
+		
+		return "redirect:/views/search.jsp";
+	}
+	
+	/**
+	 * 검색어로 방 목록 조회
+	 * @param session 유저정보
+	 * @param keyword 검색어
+	 * @param more 페이징 인덱스
+	 * @param model 
+	 * @return 
+	 */
+	@RequestMapping(value= "/search.do", method=RequestMethod.POST)
+	public String searchRoomByKeyword(HttpSession session, String keyword, String more,Model model){
+		User user = (User) session.getAttribute("loginUser");
+
+		System.out.println("로그인아이디:" + user.getLoginId());
+		String loginId = user.getLoginId();
+
+		boolean inRoom = false;
+		List<Room> roomList = roomService.retrieveRoomByTitleForSearch(keyword,more);
+		for (Room rooms : roomList) {
+			List<RoomEntry> entryUsers = rooms.getUsers();
+			for (RoomEntry users : entryUsers) {
+
+				if (loginId.equals(users.getUser().getLoginId())) {
+
+					inRoom = true;
+
+				}
+			}
+		}
+		
+		System.out.println(inRoom);
+		model.addAttribute("inRoom", inRoom);
+		model.addAttribute("roomList", roomList);
+		System.out.println("keyword/:"+keyword);
+		session.setAttribute("keyword", keyword);
+		model.addAttribute("roomList",roomList);
+		
+		return "/views/search.jsp";
+	}
+	
+	/**
+	 * 검색화면에서 더보기 처리
+	 * @param more 페이징 인덱스
+	 * @param keyword 검색어
+	 * @return 검색어로 조회된 방 목록
+	 */
+	@RequestMapping("/searchListMore.do")
+	@ResponseBody
+	public List<Room> moreRoomListByTitle(String more, String keyword) {
+
+		List<Room> roomList = roomService.retrieveRoomByTitleForSearch(keyword, more);
+		
+		return roomList;
+
+	}
+	
+	/**
+	 * 비밀방 입장시 비밀번호 확인
+	 * @param roomNumber 방번호
+	 * @param password 입력받은 비밀번호
+	 * @return 일치하면 true 일치하지 않으면 false
+	 */
+	@RequestMapping("/chkSecretPassword.do")
+	@ResponseBody
+	public boolean chkSecretPassword(String roomNumber,String password) {
+		System.out.println("비밀방 번호 :" + roomNumber );
+		Room room = roomService.retrieveRoom(roomNumber);
+		System.out.println(room.getPassword()+"와"+password +"같지않니?");
+		if(password.equals(room.getPassword())){
+			return true;
+		}
+		return false;
+	}
+	
+	@RequestMapping(value= "/roomSetting.do" , method=RequestMethod.GET)
+	public String moveRoomSetting(String loginId, String roomNumber,Model model){
+		
+		model.addAttribute("roomNumber",roomNumber);
+		model.addAttribute("loginId",loginId);
+		
+		System.out.println("roommodify.jsp로 이동");
+		return "/views/roommodify.jsp";
+	}
+	
+	
+	@RequestMapping(value= "/roomSetting.do" , method=RequestMethod.POST)
+	public String roomSetting(HttpSession session,String loginId, String roomNumber, Room room){
+		User user = (User) session.getAttribute("loginUser");
+		
+		Room modifyRoom = roomService.retrieveRoom(roomNumber);
+		
+		Category category = room.getCategory();
+		System.out.println("방설정 유저아이디 "+user.getLoginId());
+		modifyRoom.setAdmin(user);
+		modifyRoom.setCategory(category);
+		modifyRoom.setContents(room.getContents());
+		modifyRoom.setLimitUsers(room.getLimitUsers());
+		modifyRoom.setPassword(room.getPassword());
+		modifyRoom.setNotice(room.getNotice());
+		modifyRoom.setSecret(room.isSecret());
+		modifyRoom.setTitle(room.getTitle());
+		
+		roomService.modifyRoom(modifyRoom);
+		
+		return "/roomEntry/joinRoom.do?roomNumber="+roomNumber+"%loginId="+user.getLoginId();
+	}
+	
+
+}

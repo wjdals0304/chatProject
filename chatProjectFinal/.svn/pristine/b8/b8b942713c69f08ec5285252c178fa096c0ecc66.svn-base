@@ -1,0 +1,50 @@
+package chat.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.stereotype.Repository;
+
+import chat.domain.File;
+import chat.factory.ChatSqlSessionFactory;
+import chat.mapper.FileDaoMapper;
+
+@Repository
+public class FileDaoLogic implements FileDao {
+
+	@Override
+	public void registerFile(File file) {
+
+		SqlSession session = ChatSqlSessionFactory.createInstance().createSqlSession();
+		FileDaoMapper mapper = session.getMapper(FileDaoMapper.class);
+		
+		mapper.registerFile(file);
+		session.commit();
+		session.close();
+		
+	}
+
+	@Override
+	public List<File> retrieveFileByRoomNumber(String roomNumber) {
+		
+		SqlSession session = ChatSqlSessionFactory.createInstance().createSqlSession();
+		FileDaoMapper mapper = session.getMapper(FileDaoMapper.class);
+		
+		List<File> files = mapper.retrieveFileByRoomNumber(roomNumber);
+		
+		return files;
+	}
+
+	@Override
+	public void removeFile(String roomNumber) {
+
+		SqlSession session = ChatSqlSessionFactory.createInstance().createSqlSession();
+		FileDaoMapper mapper = session.getMapper(FileDaoMapper.class);
+		
+		mapper.removeFile(roomNumber);
+		session.commit();
+		session.close();
+		
+	}
+
+}

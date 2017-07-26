@@ -1,0 +1,125 @@
+package chat.controller;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+import chat.domain.Category;
+import chat.domain.User;
+import chat.service.UserService;
+
+@RequestMapping("/user")
+@Controller
+public class UserController {
+	
+	@Autowired
+	private UserService userService;
+	
+	@RequestMapping("/login.do")
+	public String login(String loginId, String password, HttpSession session){
+		
+		User user = userService.retrieveUser(loginId);
+		user.getPassword();
+		if(password.equals(user.getPassword())){
+			session.setAttribute("loginUser", user);		
+			return "redirect:/views/main.jsp";
+		} 
+		
+		return "redirect:/views/login.jsp";
+		
+		
+	}
+	
+	@RequestMapping("/logout.do")
+	public String logout(String loginId, HttpSession session){
+		
+		session.invalidate();
+
+		return "redirect:/views/login.jsp";
+		
+		
+	}
+	
+	@RequestMapping("/registerUser.do")
+	public String register(String loginId, String password
+			, String category
+			, String name, String nickName, String age
+			, String address, String email){
+		
+		User user = new User();
+		user.setAddress(address);
+		user.setAge(Integer.parseInt(age));
+		user.setCategory(Category.getByCode(category));
+		user.setEmail(email);
+		user.setLoginId(loginId);
+		user.setNickName(nickName);
+		user.setName(name);
+		user.setPassword(password);
+		
+		userService.registerUser(user);
+		
+		return "redirect:/views/main.jsp";
+		
+	}
+	
+	@RequestMapping("/mypage.do")
+	public ModelAndView mypageView(HttpSession session){
+		
+		ModelAndView mav = new ModelAndView();
+		User loginUser = (User) session.getAttribute("loginUser");
+		
+		User user = userService.retrieveUser(loginUser.getLoginId());
+		
+		mav.addObject(user);
+
+		mav.setViewName("/views/mypage.jsp");
+		
+		return mav;
+		
+	}
+	
+	@RequestMapping("/retrieve.do")
+	public ModelAndView retrieveUser(String loginId){
+		
+		ModelAndView mav = new ModelAndView();
+		User user = userService.retrieveUser(loginId);
+		
+		mav.addObject(user);
+
+		mav.setViewName("/views/chating.jsp");		
+		
+		return mav;
+		
+	}
+	
+	@RequestMapping("/modify.do")
+	public ModelAndView modifyUser(String password, String category
+									, String name, String nickName, String age
+									, String address, String email, HttpSession session){
+		
+		User user = new User();
+		user.setAddress(address);
+		user.setAge(Integer.parseInt(age));
+		user.setCategory(Category.getByCode(category));
+		user.setEmail(email);
+		user.setNickName(nickName);
+		user.setName(name);
+		user.setPassword(password);
+		
+		ModelAndView mav = new ModelAndView();
+
+		session.setAttribute("loginUser", user);
+		mav.addObject(user);
+		mav.setViewName("/views/mypage.jsp");
+		
+		
+		
+		return mav;
+		
+	}
+
+}

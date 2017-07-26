@@ -1,0 +1,93 @@
+package chat.dao;
+
+import static org.junit.Assert.*;
+
+import java.util.List;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import chat.domain.Room;
+import chat.domain.RoomEntry;
+import chat.domain.User;
+
+public class RoomEntryDaoLogicTest {
+
+	private RoomEntryDaoLogic dao;
+	
+	@Before
+	public void setUp() throws Exception {
+		dao = new RoomEntryDaoLogic();
+	}
+
+	@After
+	public void tearDown() throws Exception {
+	}
+
+	@Test
+	public void testRetrieveRoomEntryByRoomNumber() {
+
+		List<User> userList= dao.retrieveRoomEntryByRoomNumber("1");
+		
+		System.out.println(userList.size());
+		
+		assertNotNull(userList);
+		assertEquals(3,userList.size());
+	}
+
+	@Test
+	public void testRetrieveRoomEntryByLoginId() {
+
+		List<Room> roomList = dao.retrieveRoomEntryByLoginId("tester1");
+		
+		System.out.println(roomList.size());
+		
+		assertNotNull(roomList);
+		assertEquals(3,roomList.size());
+		
+	}
+
+	@Test
+	public void testRegisterRoomEntry() {
+		
+		RoomEntry roomEntry = new RoomEntry();
+		Room room = new Room();
+		User user = new User();
+		room.setRoomNumber("25");
+		user.setLoginId("tester25");
+		roomEntry.setRoom(room);
+		roomEntry.setUser(user);
+		
+		dao.registerRoomEntry(roomEntry);
+		System.out.println(roomEntry.getRoom());
+		System.out.println(roomEntry.getUser());
+		
+		assertNotNull(roomEntry);
+		
+	}
+
+	@Test
+	public void testRemoveRoomEntry() {
+		
+		RoomEntry roomEntry = new RoomEntry();
+		
+		Room room = new Room();
+		User user = new User();
+		
+		room.setRoomNumber("25");
+		user.setLoginId("tester25");
+		
+		roomEntry.setRoom(room);
+		roomEntry.setUser(user);
+		
+		dao.removeRoomEntry(roomEntry);
+		
+		List<Room> checkRoomEntry = dao.retrieveRoomEntryByLoginId("tester25");
+
+		assertTrue(checkRoomEntry.isEmpty());
+		
+		
+	}
+
+}

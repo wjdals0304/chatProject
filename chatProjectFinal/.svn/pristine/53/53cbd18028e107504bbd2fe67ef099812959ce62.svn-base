@@ -1,0 +1,35 @@
+package chat.domain;
+
+public class File {
+
+	private String fileId;
+	private String roomNumber;
+	private String uploader;
+	private String fileName;
+	
+	public String getFileId() {
+		return fileId;
+	}
+	public void setFileId(String fileId) {
+		this.fileId = fileId;
+	}
+	public String getRoomNumber() {
+		return roomNumber;
+	}
+	public void setRoomNumber(String roomNumber) {
+		this.roomNumber = roomNumber;
+	}
+	public String getUploader() {
+		return uploader;
+	}
+	public void setUploader(String uploader) {
+		this.uploader = uploader;
+	}
+	public String getFileName() {
+		return fileName;
+	}
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+	
+}

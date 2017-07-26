@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <!-- 이부분에서 mapper를 이용해서 interface를 명시해주어야 내가 그 해당 interface에 있는 걸 가져다
+ 		쓸 수 있다. -->
+<mapper namespace="chat.mapper.FileDaoMapper">
+	
+	<select id="retrieveFileByRoomNumber" parameterType="string" resultType="File">
+		 SELECT FILEID
+		 		,ROOMNUMBER
+		 		,UPLOADER
+		 		,FILENAME
+		   FROM FILE_TB
+		  WHERE ROOMNUMBER = #{value}
+	</select>
+	
+	<insert id="registerFile" parameterType="File">
+		INSERT INTO FILE_TB
+				( FILEID, ROOMNUMBER, UPLOADER, FILENAME )
+		VALUES	( FILE_TB_SEQ.nextval, #{roomNumber}
+				 ,#{uploader}, #{fileName})
+	</insert>
+	
+	<delete id="removeFile" parameterType="string">
+		DELETE FROM FILE_TB
+		 WHERE ROOMNUMBER = #{value}
+	</delete>
+</mapper>

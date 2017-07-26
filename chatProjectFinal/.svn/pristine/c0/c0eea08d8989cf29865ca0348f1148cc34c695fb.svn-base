@@ -1,0 +1,112 @@
+package chat.controller;
+
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+import chat.domain.Message;
+import chat.domain.Room;
+import chat.domain.RoomEntry;
+import chat.domain.User;
+import chat.service.MessageService;
+import chat.service.MessageServiceLogic;
+import chat.service.RoomEntryService;
+import chat.service.RoomService;
+import chat.service.UserService;
+
+@Controller
+@RequestMapping("/roomEntry")
+public class RoomEntryController {
+
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private RoomService roomService;
+
+	@Autowired
+	private RoomEntryService roomEntryService;
+
+	MessageService messageService = new MessageServiceLogic();
+	@RequestMapping("/joinRoom.do")
+	public ModelAndView joinRoom(String roomNumber, String loginId) {
+		
+		List<RoomEntry> roomEntryList = roomEntryService.retrieveRoomEntryByRoomNumber(roomNumber);
+		ModelAndView mav = new ModelAndView();
+		
+		List<Message> messageList = messageService.retrieveMessage(roomNumber, "1");
+		
+		Room room = roomService.retrieveRoom(roomNumber);
+		User user = userService.retrieveUser(loginId);
+		
+		Collections.reverse(messageList);
+		
+		mav.addObject("room",room);
+		mav.addObject("user",user);
+		mav.addObject("roomNumber",roomNumber);
+		mav.addObject("messageList",messageList);
+		
+		
+		for (RoomEntry roomEntry : roomEntryList) {
+			
+			if (roomEntryService.checkedRoomUserByRoomNumber(roomNumber, loginId)) {
+				
+				mav.addObject("roomEntry", roomEntry);
+				mav.setViewName("/views/chating.jsp");
+				break;
+				
+			}else{
+	
+				roomEntryService.registerRoomEntry(roomEntry);
+				mav.addObject("roomEntry", roomEntry);
+				mav.setViewName("/views/chating.jsp");
+				break;
+			}
+		}
+		
+		return mav;
+	}
+
+	@RequestMapping("/exitRoom.do")
+	public String exitRoom(String roomNumber, String loginId) {
+		
+		
+		List<RoomEntry> roomEntryList = roomEntryService.retrieveRoomEntryByRoomNumber(roomNumber);
+		
+		for(RoomEntry roomEntry : roomEntryList){
+			if(roomEntry.getUser().getLoginId().equals(loginId)){
+				roomEntryService.removeRoomEntry(roomEntry);
+				
+			}
+			else{
+				
+			}
+			
+		}
+	   
+
+		return "redirect:/";
+	}
+
+	@RequestMapping("/joinRoomUserList.do")
+	public ModelAndView joinRoomUserList(String roomNumber){
+		
+		List<RoomEntry> roomEntryList = roomEntryService.retrieveRoomEntryByRoomNumber(roomNumber);
+		
+		for(RoomEntry roomEntry : roomEntryList){
+			String loginId = roomEntry.getUser().getLoginId();
+			User user = userService.retrieveUser(loginId);
+			roomEntry.setUser(user);
+		}
+		ModelAndView mav = new ModelAndView();
+		
+		mav.addObject("roomEntryList", roomEntryList);
+		mav.setViewName("/views/main.jsp");
+		
+		return mav;
+	} 
+
+}

@@ -1,0 +1,89 @@
+package chat.dao;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
+import com.mongodb.WriteConcern;
+
+import chat.domain.Message;
+
+@Repository
+public class MessageDaoLogic implements MessageDao {
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public void registerMessage(Message message) {
+		// TODO Auto-generated method stub
+		MongoClient mongoClient = null;
+		try{
+			mongoClient = new MongoClient("localhost",27017);
+			WriteConcern w = new WriteConcern(1,2000);
+			mongoClient.setWriteConcern(w);
+			DB db = mongoClient.getDB("chat");
+			DBCollection coll = db.getCollection("chat");
+			DBObject doc = new BasicDBObject();
+			
+			doc.put("roomNumber",message.getRoomNumber());
+			doc.put("type", message.getType());
+			doc.put("contents", message.getContents());
+			doc.put("from", message.getFrom());
+			doc.put("setTo", message.getTo());
+			doc.put("messageDate",message.getDate());
+			coll.insert(doc);
+		  
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public List<Message> retrieveMessage(String roomNumber, String page) {
+		
+		MongoClient mongoClient = null;
+		Message message = new Message();
+		List<Message> messageList = new ArrayList<>();
+		try{
+			mongoClient = new MongoClient("localhost",27017);
+			WriteConcern w = new WriteConcern(1,2000);
+			mongoClient.setWriteConcern(w);
+			
+			DB db = mongoClient.getDB("chat");
+			DBCollection coll = db.getCollection("chat");
+
+			DBObject doc = new BasicDBObject();
+			doc.put("roomNumber","1");
+			doc.put("type" ,"TXT" );
+			doc.put("setTo", "all");
+			
+			DBObject k = new BasicDBObject();
+				k.put("_id", 0);
+			
+			DBObject o = new BasicDBObject();
+			o.put("messageDate", -1);
+			
+			int pageInt=Integer.parseInt(page);
+			
+			DBCursor cursor = coll.find(doc,k).sort(o).skip((pageInt-1)*2).limit(2);
+            while(cursor.hasNext()){
+            	DBObject a = cursor.next();
+            	message.setContents((String)a.get("contents"));
+            	message.setFrom((String)a.get("from"));
+            	messageList.add(message);
+            }
+			
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		return messageList;
+	}
+
+}

@@ -1,0 +1,86 @@
+package chat.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+import chat.domain.Room;
+import chat.domain.RoomEntry;
+import chat.domain.User;
+import chat.service.RoomEntryService;
+import chat.service.RoomService;
+import chat.service.UserService;
+
+@Controller
+@RequestMapping("/roomEntry")
+public class RoomEntryController {
+
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private RoomService roomService;
+
+	@Autowired
+	private RoomEntryService roomEntryService;
+
+	@RequestMapping("/joinRoom.do")
+	public ModelAndView joinRoom(String roomNumber, String loginId, String nickName) {
+		
+		System.out.println(roomNumber+"방번호");
+		System.out.println(loginId+"아이디");
+		User user = userService.retrieveUser(loginId);
+		Room room = roomService.retrieveRoom(roomNumber);
+		
+		
+		List<RoomEntry> roomEntryList = roomEntryService.retrieveRoomEntryByRoomNumber(roomNumber);
+		System.out.println(roomEntryList.toString()+"toString");
+		ModelAndView mav = new ModelAndView();
+		
+		for (RoomEntry roomEntry : roomEntryList) {
+			System.out.println(roomEntry.getUser().getLoginId()+"1111111111111111111111");
+			if (loginId.equals(roomEntry.getUser().getLoginId())&&roomNumber.equals(roomEntry.getRoom().getRoomNumber())) {
+				mav.addObject("roomEntry", roomEntry);
+				mav.setViewName("/views/chating.jsp");
+			
+				break;
+			}else{
+			
+				
+				roomEntry.setUser(user);
+				roomEntry.setRoom(room);
+				roomEntryService.registerRoomEntry(roomEntry);
+				mav.addObject("roomEntry", roomEntry);
+				mav.setViewName("/views/chating.jsp");
+				break;
+			}
+		
+		}
+		
+		return mav;
+	}
+
+	@RequestMapping("/exitRoom.do")
+	public String exitRoom(String roomNumber, String loginId) {
+		
+		
+		List<RoomEntry> roomEntryList = roomEntryService.retrieveRoomEntryByRoomNumber(roomNumber);
+		
+		for(RoomEntry roomEntry : roomEntryList){
+			if(roomEntry.getUser().getLoginId().equals(loginId)){
+				roomEntryService.removeRoomEntry(roomEntry);
+				
+			}
+			else{
+				
+			}
+			
+		}
+	   
+
+		return "redirect:/";
+	}
+
+}

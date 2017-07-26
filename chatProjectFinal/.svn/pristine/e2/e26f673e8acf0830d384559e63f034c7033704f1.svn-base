@@ -1,0 +1,37 @@
+package chat.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import chat.dao.FileDaoLogic;
+import chat.domain.File;
+
+@Service
+public class FileServiceLogic implements FileService {
+
+	@Autowired
+	private FileDaoLogic fileDaoLogic;
+	
+	@Override
+	public void registerFile(File file) {
+
+		fileDaoLogic.registerFile(file);
+		
+	}
+
+	@Override
+	public List<File> retrieveFileByRoomNumber(String roomNumber) {
+		
+		return fileDaoLogic.retrieveFileByRoomNumber(roomNumber);
+	}
+
+	@Override
+	public void removeFile(String roomNumber) {
+
+		fileDaoLogic.removeFile(roomNumber);
+		
+	}
+
+}

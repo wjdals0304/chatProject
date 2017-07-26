@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <!-- 이부분에서 mapper를 이용해서 interface를 명시해주어야 내가 그 해당 interface에 있는 걸 가져다
+ 		쓸 수 있다. -->
+<mapper namespace="chat.mapper.UserDaoMapper">
+	
+<!-- 	<resultMap type="chat.domain.User" id="user-resultMap">	
+		<result property="userId" column="userId"/>
+		<result property="loigId" column="loigId"/>
+		<result property="password" column="password"/>
+		<result property="name" column="name"/>
+		<result property="nickName" column="nickName"/>
+		<result property="age" column="age"/>
+		<result property="address" column="address"/>
+		<result property="email" column="email"/>
+		<result property="category.code" column="category" typeHandler="CategoryToCharHandler"/>
+	</resultMap> -->
+	
+	<select id="retrieveUser" resultType="User" parameterType="String">
+		SELECT userId, loginId, password, name, nickName, age, address, email, category
+		  FROM user_tb
+		 WHERE loginId=#{loginId}
+	</select>
+	
+	<select id="retrieveUserAll" resultType="User">
+		SELECT userId, loginId, password, name, nickName, age, address, email, category
+		  FROM user_tb
+	</select>
+	
+	<update id="modifyUser" parameterType="User">
+		UPDATE user_tb
+		   SET password = #{password},
+		       nickName = #{nickName},
+		       age = #{age},
+		       address = #{address},
+		       email = #{email}, 
+		       category = #{category.code}
+		 WHERE userId = #{userId}
+	</update>
+	
+	<insert id="registerUser" parameterType="User">
+		INSERT INTO user_tb(userId, loginId, password, name
+							, nickName, age, address, email, category)
+		VALUES (userId_seq.nextval, #{loginId}, #{password}, #{name}
+				, #{nickName}, #{age}, #{address}, #{email}, #{category.code})
+	</insert>
+</mapper>

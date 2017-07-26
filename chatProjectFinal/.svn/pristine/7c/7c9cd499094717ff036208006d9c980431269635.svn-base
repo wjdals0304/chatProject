@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <!-- 이부분에서 mapper를 이용해서 interface를 명시해주어야 내가 그 해당 interface에 있는 걸 가져다
+ 		쓸 수 있다. -->
+<mapper namespace="chat.mapper.RoomEntryDaoMapper">
+
+<select id="retrieveRoomEntryByRoomNumber"  parameterType="String" resultMap="roomEntry-resultmap">
+
+	SELECT ROOMNUMBER, LOGINID
+	FROM ROOMENTRY_TB
+	WHERE ROOMNUMBER = #{roomNumber} 
+
+</select>
+
+
+<select id="retrieveRoomEntryByLoginId" parameterType="String" resultMap="roomEntry-resultmap">
+	SELECT ROOMNUMBER, LOGINID
+	FROM ROOMENTRY_TB
+	WHERE LOGINID = #{loginId} 
+
+</select>
+
+<insert id="registerRoomEntry" parameterType="RoomEntry">
+	INSERT INTO ROOMENTRY_TB  (ROOMNUMBER, LOGINID)
+	VALUES (#{room.roomNumber}, #{user.loginId})
+
+</insert>
+
+<delete id="removeRoomEntry" parameterType="RoomEntry">
+	DELETE FROM ROOMENTRY_TB
+	WHERE ROOMNUMBER=#{room.roomNumber}
+	AND LOGINID=#{user.loginId}
+
+
+</delete>
+
+	<resultMap type="RoomEntry" id="roomEntry-resultmap">
+	<result property="room.roomNumber" column="ROOMNUMBER" />
+	<result property="user.loginId" column="LOGINID" />
+	</resultMap>
+
+
+
+
+</mapper>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <!-- 이부분에서 mapper를 이용해서 interface를 명시해주어야 내가 그 해당 interface에 있는 걸 가져다
+ 		쓸 수 있다. -->
+<mapper namespace="chat.mapper.RoomDaoMapper">
+	
+	<select id="retrieveRoomAll" resultType="Room">
+		 SELECT ROOMNUMBER, TITLE, ADMIN, notice, category, limitUsers
+		  FROM ROOM_TB
+	</select>
+	
+	<select id="retrieveRoom" parameterType="string" resultType="Room">
+		SELECT ROOMNUMBER, TITLE, ADMIN, notice, category, limitUsers
+		  FROM ROOM_TB
+		 WHERE ROOMNUMBER = #{roomNumber}
+	</select>
+	
+
+	<insert id="createRoom" parameterType="Room">
+		INSERT INTO ROOM_TB
+			( ROOMNUMBER, TITLE, ADMIN, notice, category, limitUsers)
+		VALUES
+			( room_seq.nextval, #{title}, #{admin}, #{notice}, #{category}, #{limitUsers} )
+	</insert>
+	
+	<delete id="deleteRoom" parameterType="map">
+		DELETE FROM ROOM_TB
+		 WHERE roomNumber = #{roomNumber}
+		   AND admin = #{loginId}
+	</delete>
+	
+	<update id="modifyRoom" parameterType="Room">
+		UPDATE room_TB
+		   SET admin = #{admin}
+		 WHERE roomNumber = #{roomNumber}
+	</update>
+	
+	<insert id="createJoin" parameterType="Join">
+		INSERT INTO join_tb
+			( ROOMNUMBER, loginId)
+		VALUES
+			( #{roomNumber}, #{loginId} )
+	</insert>
+	
+	<select id="retrieveAllJoin"  resultType="Join">
+		SELECT roomNumber, loginId
+		  FROM join_tb
+	</select>
+	
+	<delete id="deleteJoin" parameterType="map">
+		DELETE FROM join_tb
+		 WHERE roomNumber = #{roomNumber}
+		   AND loginId = #{loginId}
+	</delete>
+	
+	<select id="retrieveByRoomNumber" parameterType="string" resultType="Join">
+		SELECT loginId
+		  FROM join_tb
+		 WHERE roomNumber = #{roomNumber}
+	</select>	
+	
+</mapper>

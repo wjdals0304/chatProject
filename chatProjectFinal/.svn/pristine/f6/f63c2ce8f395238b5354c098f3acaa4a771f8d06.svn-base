@@ -1,0 +1,363 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/w3.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/sub.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<head>
+	<meta charset="UTF-8">
+    
+    <title>1번방</title>
+	<style>
+.jstalktheme
+{
+	background-color: #9bbad8;
+	padding: 4px 4px 0px 4px;
+}
+
+.jstalktheme .clear
+{
+	clear: both;
+}
+
+.jstalktheme .blank
+{
+	clear: both;
+	height: 4px;
+}
+
+.jstalktheme .msg
+{
+	height: calc(100% - 72px);
+	overflow-y: scroll;
+	
+	font-size: 12px;
+}
+
+.jstalktheme .msg .time
+{
+	font-size: 10px;
+}
+
+.jstalktheme .msg .mytalk
+{
+	float: right;
+	width: 100%;
+}
+
+.jstalktheme .msg .mytalk .time
+{
+	float: right;
+	bottom: 0;
+}
+
+.jstalktheme .msg .mytalk .a
+{
+	float: right;
+	position: relative;
+	min-height: 24px;
+	max-width: calc(100% - 64px);
+	left: 2px;
+	background-color: #ffec42;
+	border-radius: 3px;
+	z-index: 2;
+	padding: 0px 4px 0px 4px;
+	word-break: break-all;
+}
+
+.jstalktheme .msg .mytalk .b
+{
+	float: right;
+	position: relative;
+	width: 8px;
+	height: 22px;
+	background: url('/Socket.web/views/chat_balloon_yellow.right.png');
+	z-index: 1;
+}
+
+.jstalktheme .msg .othertalk
+{
+	float: left;
+	width: 100%;
+}
+
+.jstalktheme .msg .othertalk .profile_image
+{
+	float: left;
+	width: 40px;
+	height: 40px;
+	border-radius: 14px; 
+}
+
+.jstalktheme .msg .othertalk .box
+{
+	float: left;
+	width: calc(100% - 48px);
+}
+
+.jstalktheme .msg .othertalk .box .profile_name
+{
+	font-size: 12px;
+}
+
+.jstalktheme .msg .othertalk .box .a
+{
+	float: left;
+	position: relative;
+	width: 8px;
+	height: 22px;
+	background: url('/Socket.web/views/chat_balloon_white.left.png');
+	z-index: 1;
+}
+
+.jstalktheme .msg .othertalk .box .b
+{
+	float: left;
+	position: relative;
+	min-height: 24px;
+	max-width: calc(100% - 64px);
+	left: -2px;
+	background-color: #ffffff;
+	border-radius: 3px;
+	z-index: 2;
+	padding: 0px 4px 0px 4px;
+	word-break: break-all;
+}
+
+.jstalktheme .msg .othertalk .box .time
+{
+	float: left;
+}
+
+.jstalktheme .sendmsg
+{
+	
+}
+
+.jstalktheme .sendmsg .textarea
+{
+	float: left;
+	width: calc(100% - 68px);
+	height: 64px;
+	border-radius: 8px 0px 0px 8px;
+	margin: 0px 0px 0px 0px;
+	padding: 2px 2px 2px 2px;
+	resize: none;
+}
+
+.jstalktheme .sendmsg .button
+{
+	float: right;
+	width: 62px;
+	height: 68px;
+	background-color: #ffec42;
+	border-radius: 0px 8px 8px 0px;
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 0px 0px;
+	text-align: center;
+	display: table;
+	cursor: pointer;
+}
+
+.jstalktheme .sendmsg .button p
+{
+  display: table-cell;
+  vertical-align: middle;
+}
+
+	</style>
+</head>
+<body>
+
+<div class="jstalktheme" id="jstalktheme_test" style="width: 420px; height: 580px;">
+<div class="msg" id="chatMessage">
+
+<div class="w3-card-4 notice">
+        <div class="w3-container w3-light-grey w3-medium">
+          <div class="w3-left">
+            <span class="fa fa-check"><b>공지사항</b></span>
+          </div>
+          <div class="w3-right">
+            <a href="#none"><span class="fa fa-pencil"></span></a>&nbsp;
+            <a href="#none" class="noticeClose"><span class="fa fa-chevron-circle-up"></span></a>
+          </div>
+        </div>
+        <div class="w3-container w3-white">
+          <p class="w3-small">공지사항입니다!!!!!!!!!!!!!!!!!!!!!</p>
+        </div>
+      </div>
+      <div class="noticeBtn w3-right">
+        <a href="#none" class="noticeOpen fa fa-chevron-circle-down w3-xlarge"></a>
+      </div>
+</div>  
+<!-- 
+        <div id="chatMessage"></div>
+           -->
+          <div class="sendmsg"> 
+          
+        <textarea id="inputMessage" class="textarea"  > 
+        </textarea>
+     
+     <div class="button"  id="send">
+ 	   <p>전송</p>
+    </div>
+    
+    <form action="/Socket.web/chat/exitRoom.do" method ="post">
+    
+	    <input type="hidden" name="roomNumber" value="${roomNumber}">
+		<input type="submit" value="나가기">  
+    </form>
+   	
+     <div class="clear">
+    </div>
+    
+     </div>
+     
+</div>
+
+</body>
+
+<script  src="https://code.jquery.com/jquery-3.1.1.js"></script>
+    <script type="text/javascript">
+    function jstalktheme_addmsg(type, name, time, msg)
+    {
+    	var ocontainer = document.getElementById("jstalktheme_test");
+    	var ocontainer_msg = ocontainer.getElementsByClassName("msg")[0];
+    	
+    	var onewmsg = document.createElement("div");
+    	var onewblank = document.createElement("div");
+    	
+    	if(type)
+    	{
+    		onewmsg.className="othertalk";
+    		onewmsg.innerHTML = 
+    		"<div class=\"profile_image\" style=\"background: url('/Socket.web/views/profile_image.png');\">\n"+
+    		"</div>\n"+
+    		"<div class=\"box\">\n"+
+    		"<div class=\"profile_name\">\n"+
+    		name+"\n"+
+    		"</div>\n"+
+    		"<div class=\"a\">\n"+
+    		"</div>\n"+
+    		"<div class=\"b\">\n"+
+    		msg+"\n"+
+    		"</div>\n" +
+    		"<div class=\"time\">\n"+
+    		time+"\n"+
+    		"</div>\n"+
+    		"</div>\n";
+    	}else{
+    		onewmsg.className="mytalk";
+    		onewmsg.innerHTML = 
+    		"<div class=\"b\">\n"+
+    		"</div>\n"+
+    		"<div class=\"a\">\n"+
+    		msg+"\n"+
+    		"</div>\n"+
+    		"<div class=\"time\">\n"+
+    		time+"\n"+
+    		"</div>\n" +
+    		"";
+    	}
+    	onewmsg.innerHTML +=
+        "<div class=\"clear\">\n"+
+        "</div>";
+    	
+    	onewblank.className="blank";
+    	
+    	ocontainer_msg.appendChild(onewmsg);
+    	ocontainer_msg.appendChild(onewblank);
+    	
+    	ocontainer_msg.scrollTop = ocontainer_msg.scrollHeight;
+    }
+	
+		var url= "ws://localhost:8080/Socket.web/broadcasting/${roomNumber}&${name}";
+        var textarea = $("#messageWindow");
+        var webSocket = new WebSocket(url);
+        var inputMessage = $('#inputMessage');
+
+		
+        
+    webSocket.onerror = function(event) {
+      onError(event)
+    };
+    webSocket.onopen = function(event) {
+      onOpen(event)
+    };
+    webSocket.onmessage = function(event) {
+      onMessage(event)
+    };
+
+    function onMessage(event) {
+	    var jsonData = JSON.parse(event.data);
+    	 var string =jsonData.message
+    	 var aa  = string.split(":");
+    	 
+		if(jsonData.message != null){
+			/* $("#chatMessage").append(jsonData.message + "<br/>"); 
+	        $("#chatMessage").scrollTop(99999999);*/
+		    	
+		var otxtmsg = aa[1];
+    	
+    	var d = new Date();
+    	var ampm = (d.getHours()>12 ?  "PM" : "AM");
+    	var h = (d.getHours()>12 ? d.getHours()-12 : d.getHours());
+    	var m = d.getMinutes();
+
+    	 /* otxtmsg.value.replace("\n","<br />\n") */
+    	jstalktheme_addmsg(true,aa[0], ampm+" "+h+":"+m,otxtmsg);
+		
+		}
+		
+    }
+    function onOpen(event) {
+    	$("#chatMessage").append("연결 성공"+ "<br/>");
+    }
+    function onError(event) {
+      alert(event.data);
+    }
+    
+    $("#inputMessage").keydown(function (key) {
+        if (key.keyCode == 13) {
+            $("#send").click();
+        }
+    });
+    
+    $(document).ready(function(){
+    	$("#send").click(function(){
+    		
+    		 webSocket.send(inputMessage.val());
+    	
+    		 var otxtmsg = document.getElementById("inputMessage");
+    	    	
+    	    	var d = new Date();
+    	    	var ampm = (d.getHours()>12 ?  "PM" : "AM");
+    	    	var h = (d.getHours()>12 ? d.getHours()-12 : d.getHours());
+    	    	var m = d.getMinutes();
+
+    	    	
+    	    	jstalktheme_addmsg(false,"나", ampm+" "+h+":"+m, otxtmsg.value.replace("\n","<br />\n"));
+    		 
+    		 
+    		 $("#chatMessage").scrollTop(99999999);
+    		 inputMessage.val(""); 
+    	
+    	});
+    	
+    	  $(".noticeClose").click(function(){
+    	        $(".notice").css({"display":"none"});  
+    	        $(".noticeOpen").css({"display":"block"});
+    	      })
+    	      $(".noticeOpen").click(function(){
+    	        $(".notice").css("display","block");
+    	        $(".noticeOpen").css({"display":"none"});
+    	        
+    	      })
+    })
+		
+            
+   
+    
+  </script>
+</html>

@@ -1,0 +1,66 @@
+package chat.dao;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import chat.domain.File;
+
+public class FileDaoLogicTest {
+
+	private FileDaoLogic fileDaoLogic;
+	
+	@Before
+	public void setup(){
+		fileDaoLogic = new FileDaoLogic();
+	}
+	
+	@Test
+	public void testRegisterFile(){
+		
+		File file = new File();
+		
+		file.setFileName("yuri.jsp");
+		file.setRoomNumber("1");
+		file.setUploader("yuri");
+		
+		fileDaoLogic.registerFile(file);
+		
+		assertNotNull(fileDaoLogic.retrieveFileByRoomNumber("1"));
+	}
+	
+	@Test
+	public void testRemoveFile(){
+		
+		System.out.println(fileDaoLogic.retrieveFileByRoomNumber("1").get(0).getFileName());
+
+		fileDaoLogic.removeFile("1");
+		
+		assertNull(fileDaoLogic.retrieveFileByRoomNumber("1"));
+		
+	}
+	
+	@Test
+	public void testRetrieveFileByRoomNumber(){
+		
+		List<File> files = fileDaoLogic.retrieveFileByRoomNumber("1");
+		
+		for(File file : files){
+			
+			System.out.println(file.getFileName()+" "+file.getRoomNumber()+" "
+								+file.getUploader());
+			
+		}
+		
+		assertFalse(files.isEmpty());
+		
+	}
+	
+}

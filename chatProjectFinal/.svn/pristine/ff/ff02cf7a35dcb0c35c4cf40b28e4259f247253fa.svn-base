@@ -1,0 +1,120 @@
+package chat.dao;
+
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.stereotype.Repository;
+
+import chat.domain.Join;
+import chat.domain.Room;
+import chat.factory.ChatSqlSessionFactory;
+import chat.mapper.RoomDaoMapper;
+
+@Repository
+public class RoomDaoLogic implements RoomDao {
+
+	@Override
+	public List<Room> retrieveRoomAll() {
+		SqlSession session = ChatSqlSessionFactory.createInstance().createSqlSession();
+		RoomDaoMapper mapper = session.getMapper(RoomDaoMapper.class);
+
+		List<Room> roomList = mapper.retrieveRoomAll();
+		session.close();
+		return roomList;
+	}
+
+	@Override
+	public Room retrieveRoom(String roomNumber) {
+		SqlSession session = ChatSqlSessionFactory.createInstance().createSqlSession();
+		RoomDaoMapper mapper = session.getMapper(RoomDaoMapper.class);
+
+		Room room = mapper.retrieveRoom(roomNumber);
+		session.close();
+		return room;
+	}
+
+	@Override
+	public void createRoom(Room room) {
+
+		SqlSession session = ChatSqlSessionFactory.createInstance().createSqlSession();
+		RoomDaoMapper mapper = session.getMapper(RoomDaoMapper.class);
+
+		mapper.createRoom(room);
+		session.commit();
+		session.close();
+	}
+
+	@Override
+	public void deleteRoom(HashMap<String, Object> map) {
+		//
+		SqlSession session = ChatSqlSessionFactory.createInstance().createSqlSession();
+		RoomDaoMapper mapper = session.getMapper(RoomDaoMapper.class);
+
+		mapper.deleteRoom(map);
+		session.commit();
+		session.close();
+
+	}
+
+	@Override
+	public void modifyRoom(Room room) {
+		//
+		SqlSession session = ChatSqlSessionFactory.createInstance().createSqlSession();
+		RoomDaoMapper mapper = session.getMapper(RoomDaoMapper.class);
+
+		mapper.modifyRoom(room);
+		session.commit();
+		session.close();
+
+	}
+
+	@Override
+	public void createJoin(Join join) {
+		//
+		SqlSession session = ChatSqlSessionFactory.createInstance().createSqlSession();
+		RoomDaoMapper mapper = session.getMapper(RoomDaoMapper.class);
+
+		mapper.createJoin(join);
+		session.commit();
+		session.close();
+	}
+
+	@Override
+	public List<Join> retrieveAllJoin() {
+		//
+		SqlSession session = ChatSqlSessionFactory.createInstance().createSqlSession();
+		RoomDaoMapper mapper = session.getMapper(RoomDaoMapper.class);
+
+		List<Join> joinList = mapper.retrieveAllJoin();
+		session.close();
+		return joinList;
+
+	}
+
+	@Override
+	public void deleteJoin(HashMap<String, Object> map) {
+		//
+		SqlSession session = ChatSqlSessionFactory.createInstance().createSqlSession();
+		RoomDaoMapper mapper = session.getMapper(RoomDaoMapper.class);
+
+		mapper.deleteJoin(map);
+		session.commit();
+		session.close();
+
+	}
+
+	@Override
+	public List<Join> retrieveByRoomNumber(String roomNumber) {
+		// 
+		SqlSession session = ChatSqlSessionFactory.createInstance().createSqlSession();
+		RoomDaoMapper mapper = session.getMapper(RoomDaoMapper.class);
+
+		List<Join> joinUserList = mapper.retrieveByRoomNumber(roomNumber);
+		session.close();
+		
+		return joinUserList;
+
+	}
+
+}

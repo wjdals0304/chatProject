@@ -1,0 +1,75 @@
+package chat.download;
+
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.Socket;
+
+import chat.domain.FileInfo;
+
+public class WASDownloadFileReceiver extends Thread {
+
+	private Socket socket;
+	private FileInfo fileInfo;
+	private String path = "c:/java142/datacenter/download/";
+	
+	@Override
+	public void run() {
+		
+		try{
+			System.out.println("WASDownloadFileReceiver 근무 중 이상 무");
+			System.out.println("8101포트로 들어온 정보의 파일을 직접전송받습니다.");
+
+			while(true){
+				
+				socket = DataQueueManager.getSocketQueue().take();
+				
+				InputStream in = socket.getInputStream();
+				DataInputStream din = new DataInputStream(in);
+				
+				String fileStr = din.readUTF();
+				
+				String strTok[] = fileStr.split(":");
+				
+				//fileInfo:fileName:uploader:roomNumber:realFileName:size:downloader
+				// 0         1         2         3           4         5     
+				fileInfo = new FileInfo();
+				fileInfo.setFileName(strTok[1]);
+				fileInfo.setUploader(strTok[2]);
+				fileInfo.setRoomNumber(strTok[3]);
+				fileInfo.setRealFileName(strTok[4]);
+				fileInfo.setFileSize(strTok[5]);
+				fileInfo.setDownloader(strTok[6]);
+				
+				//이걸 이제 가져다 쓸뀨!
+				//FileInfoMapDown.getFileInfoMapDown().put(strTok[6], fileInfo);
+				
+				BufferedInputStream bin = new BufferedInputStream(in);
+				FileOutputStream fout 
+					= new FileOutputStream(new File(path+fileInfo.getFileName()));
+				
+				int len = 0;
+				byte[] buffer = new byte[8192];
+				int data = 0;
+				
+				while((len = bin.read(buffer))>0){
+					fout.write(buffer, 0, len);
+					fout.flush();
+					data += len;
+					System.out.println("Download 폴더에 전송량 : "+data);
+				}
+				
+				fout.close();
+				bin.close();
+				din.close();
+				in.close();
+			}
+			
+		}catch(InterruptedException | IOException e){
+			e.printStackTrace();
+		}
+	}
+}

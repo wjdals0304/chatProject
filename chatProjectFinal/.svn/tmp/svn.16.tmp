@@ -1,0 +1,6 @@
+package chat.mapper;
+
+public interface RoomDaoMapper {
+
+	
+}

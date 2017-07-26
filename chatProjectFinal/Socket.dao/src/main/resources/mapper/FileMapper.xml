@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <!-- 이부분에서 mapper를 이용해서 interface를 명시해주어야 내가 그 해당 interface에 있는 걸 가져다
+ 		쓸 수 있다. -->
+<mapper namespace="chat.mapper.FileDaoMapper">
+
+	<resultMap type="FileInfo" id="fileInfo-resultMap">
+		<result column="FILENAME" property="fileName"/>
+		<result column="UPLOADER" property="uploader"/>
+		<result column="ROOMNUMBER" property="roomNumber"/>
+		<result column="FILESIZE" property="fileSize"/>
+		<result column="INTEGRITY" property="integrity" typeHandler="BooleanToYnHandler"/>
+	</resultMap>
+	
+	<select id="retrieveFile" parameterType="string" resultMap="fileInfo-resultMap">
+		SELECT FILENAME, UPLOADER, ROOMNUMBER, REALFILENAME, FILESIZE, INTEGRITY 
+		  FROM FILE_TB
+		 WHERE REALFILENAME = #{value}
+	</select>
+	
+	<select id="retrieveFileByModifyName" parameterType="string" resultMap="fileInfo-resultMap">
+		SELECT FILENAME, UPLOADER, ROOMNUMBER, REALFILENAME, FILESIZE, INTEGRITY
+		  FROM FILE_TB
+		 WHERE FILENAME = #{value}
+	</select>
+	
+	<select id="retrieveFileAll" parameterType="string" resultMap="fileInfo-resultMap">
+		SELECT FILENAME, UPLOADER, ROOMNUMBER, REALFILENAME, FILESIZE, INTEGRITY
+		  FROM FILE_TB
+		 WHERE ROOMNUMBER = #{value, jdbcType=VARCHAR}
+	</select>
+	
+	<update id="uploadComplete" parameterType="String">
+		UPDATE FILE_TB
+		   SET INTEGRITY = 'Y'
+		 WHERE FILENAME = #{value}
+	</update>
+	
+	<insert id="registerFile" parameterType="FileInfo">
+		INSERT INTO FILE_TB
+				( FILENAME, UPLOADER,
+				  ROOMNUMBER, REALFILENAME,
+				  FILESIZE, INTEGRITY )
+		VALUES  ( #{fileName}, #{uploader},
+				  #{roomNumber, typeHandler=StringToNumberHandler}, 
+				  #{realFileName},
+				  #{fileSize}, #{integrity, javaType=boolean, jdbcType=CHAR})
+	</insert>
+	
+	<delete id="removeFile" parameterType="string">
+		DELETE FROM FILE_TB
+		 WHERE ROOMNUMBER = #{value, jdbcType=VARCHAR}
+	</delete>
+	
+</mapper>

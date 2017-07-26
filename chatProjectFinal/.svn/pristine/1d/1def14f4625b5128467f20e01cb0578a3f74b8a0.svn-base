@@ -1,0 +1,30 @@
+package chat.mapper;
+
+import java.util.HashMap;
+import java.util.List;
+
+import chat.domain.Join;
+import chat.domain.Room;
+
+
+public interface RoomDaoMapper {
+
+	List<Room> retrieveRoomAll();
+	
+	Room retrieveRoom(String roomNumber);
+	
+	void createRoom(Room room);
+	
+	void deleteRoom(HashMap<String, Object> map);
+	
+	void modifyRoom(Room room);
+	
+	void createJoin(Join join);
+	
+	List<Join> retrieveAllJoin();
+	
+	void deleteJoin(HashMap<String, Object> map);
+	
+	List<Join> retrieveByRoomNumber(String roomNumber);
+	
+}

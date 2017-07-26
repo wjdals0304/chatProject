@@ -1,0 +1,23 @@
+package chat.domain;
+
+public class Join {
+	
+	private String roomNumber;
+	private String loginId;
+	
+	public String getRoomNumber() {
+		return roomNumber;
+	}
+	public void setRoomNumber(String roomNumber) {
+		this.roomNumber = roomNumber;
+	}
+	public String getLoginId() {
+		return loginId;
+	}
+	public void setLoginId(String loginId) {
+		this.loginId = loginId;
+	}
+	
+	
+
+}

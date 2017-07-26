@@ -1,0 +1,65 @@
+package chat.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.stereotype.Repository;
+
+import chat.domain.Room;
+import chat.domain.RoomEntry;
+import chat.domain.User;
+import chat.factory.ChatSqlSessionFactory;
+import chat.mapper.RoomEntryDaoMapper;
+
+@Repository
+public class RoomEntryDaoLogic implements RoomEntryDao {
+
+	@Override
+	public List<User> retrieveRoomEntryByRoomNumber(String roomNumber) {
+		//
+		SqlSession session = ChatSqlSessionFactory.createInstance().createSqlSession();
+		RoomEntryDaoMapper mapper= session.getMapper(RoomEntryDaoMapper.class);
+		
+		List<User> userList = mapper.retrieveRoomEntryByRoomNumber(roomNumber);
+		session.close();
+		return userList;
+	}
+
+	@Override
+	public List<Room> retrieveRoomEntryByLoginId(String loginId) {
+		//
+		SqlSession session = ChatSqlSessionFactory.createInstance().createSqlSession();
+		RoomEntryDaoMapper mapper= session.getMapper(RoomEntryDaoMapper.class);
+		
+		List<Room> roomList = mapper.retrieveRoomEntryByLoginId(loginId);
+		session.close();
+		
+		return roomList;
+	}
+	
+
+	@Override
+	public void registerRoomEntry(RoomEntry roomEntry) {
+		//
+		SqlSession session = ChatSqlSessionFactory.createInstance().createSqlSession();
+		RoomEntryDaoMapper mapper= session.getMapper(RoomEntryDaoMapper.class);
+		
+		mapper.registerRoomEntry(roomEntry);
+		session.commit();
+		session.close();
+
+	}
+
+	@Override
+	public void removeRoomEntry(RoomEntry roomEntry) {
+		// 
+		SqlSession session = ChatSqlSessionFactory.createInstance().createSqlSession();
+		RoomEntryDaoMapper mapper= session.getMapper(RoomEntryDaoMapper.class);
+		
+		mapper.removeRoomEntry(roomEntry);
+		
+		session.commit();
+		session.close();
+	}
+
+}

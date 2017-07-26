@@ -1,0 +1,58 @@
+package chat.download;
+
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+
+import chat.dao.FileDaoLogic;
+import chat.domain.FileInfo;
+
+public class FileInfoClient extends Thread {
+
+	private FileDaoLogic fileDaoLogic;
+	private FileInfo fileInfo;
+	private Socket socket;
+	
+	public FileInfoClient(){
+		fileDaoLogic = new FileDaoLogic();
+		System.out.println("WAS Side FileInfoClient 근무 중 이상 무");
+	}
+	
+	public void run() {
+		
+		try{
+			while(true){
+				
+				FileInfo tempInfo
+					= FileDownloadQueue.getFileInfoQueue().take();
+				
+				System.out.println("확인해라:"+tempInfo.getRealFileName());
+				
+				fileInfo
+					= fileDaoLogic.retrieveFileByModifyName(tempInfo.getFileName());
+				
+				socket = new Socket("192.168.0.8", 8100);
+				//밑에서 해당 정보를 요청으로 쏜다.
+				OutputStream out = socket.getOutputStream();
+				DataOutputStream dout = new DataOutputStream(out);
+				//요 스트림으로 UTF로 딱 파일인포만 보낸당
+				
+				System.out.println("FileInfo Client에서 보내는 자료들");
+				System.out.println(fileInfo.fileInfoToString());
+				
+				dout.writeUTF(fileInfo.fileInfoToString());
+				
+				dout.close();
+				out.close();
+				socket.close();
+				
+			}
+			
+		}catch(InterruptedException | IOException e){
+			e.printStackTrace();
+		}
+		
+	}
+}

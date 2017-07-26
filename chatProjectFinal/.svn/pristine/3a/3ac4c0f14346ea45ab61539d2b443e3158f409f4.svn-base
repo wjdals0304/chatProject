@@ -1,0 +1,44 @@
+package chat.domain;
+
+public class Message {
+	
+	private int fileSize; 
+	private String to;
+	private String from;
+	private String contents;
+	private String roomNumber;
+	
+	public int getFileSize() {
+		return fileSize;
+	}
+	public void setFileSize(int fileSize) {
+		this.fileSize = fileSize;
+	}
+	public String getTo() {
+		return to;
+	}
+	public void setTo(String to) {
+		this.to = to;
+	}
+	public String getFrom() {
+		return from;
+	}
+	public void setFrom(String from) {
+		this.from = from;
+	}
+	public String getContents() {
+		return contents;
+	}
+	public void setContents(String contents) {
+		this.contents = contents;
+	}
+	public String getRoomNumber() {
+		return roomNumber;
+	}
+	public void setRoomNumber(String roomNumber) {
+		this.roomNumber = roomNumber;
+	}
+	
+	
+	
+}

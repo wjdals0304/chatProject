@@ -1,0 +1,392 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+  <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>채팅</title>
+ <%@include file ="/resources/common/head.jsp" %>
+
+<script>
+
+ $(document).ready(function(){
+    $(".pop_test").click(function(){
+      $(".test_box").css("display","block");
+      //스크롤 없앰
+      $('html, body').css({'overflow': 'hidden', 'height':'100%'});        
+      //마스크를 100%로 덮는다
+      $('#mask').css({'width':'100%','height':'100%'});  
+      //마스크 나타나게
+      $('#mask').show();      
+    })
+    $("#mask").click(function(){
+      $(".test_box").css("display","none");
+      $('#mask').css({'width':'0%','height':'0%'}); 
+      $('html, body').css({'overflow':'visible', 'height':'100%'});
+    })
+    
+    $(document).on("click",".profile_image",function(){
+        
+    	$(".user_box").css("display","block");
+        //스크롤 없앰
+        $('html, body').css({'overflow': 'hidden', 'height':'100%'});        
+        //마스크를 100%로 덮는다
+        $('#userMask').css({'width':'100%','height':'100%'});  
+        //마스크 나타나게
+        $('#userMask').show();
+        
+        var loginId = $(this).data("loginid");
+        
+        $.ajax({
+           url:"/Socket.web/roomEntry/chatUserInfo.do",	
+           type:"post",
+           data:{"loginId":loginId},
+           success : function(data){
+        	   console.log(data.loginId);
+        	   contents =  "<b>아이디</b> :  "+"<span><b>"+data.loginId+"</b></span><br>"
+        	            + "	<b>이름</b> :  "+"<span><b>"+data.name+"</b></span><br>"
+        	            + "	<b>이메일</b> :"+"<span><b>"+data.email+"</b></span><br>"
+        	            + "	<b>닉네임</b> :"+"<span><b>"+data.nickName+"</b></span>"
+        	  $("#userInfo").append(contents);
+           }
+           ,error:function(){
+        	   alert("error");
+           }
+        });
+            
+      });
+    
+      $("#userMask").click(function(){
+        $(".user_box").css("display","none");
+        $('#userMask').css({'width':'0%','height':'0%'}); 
+        $('html, body').css({'overflow':'visible', 'height':'100%'});
+        $("#userInfo").empty();
+      })
+  })
+ 
+  $(document).ready(function(){
+      $(".noticeClose").click(function(){
+        $(".notice").css({"display":"none"});  
+        $(".noticeOpen").css({"display":"block"});
+      })
+      $(".noticeOpen").click(function(){
+        $(".notice").css("display","block");
+        $(".noticeOpen").css({"display":"none"});
+      })
+   })
+   
+</script>
+  <script>
+  $(document).ready(function(){
+  var fileTarget = $('.filebox .upload-hidden');
+
+  fileTarget.on('change', function(){  // 값이 변경되면
+    if(window.FileReader){  // modern browser
+      var filename = $(this)[0].files[0].name;
+    } 
+    else {  // old IE
+      var filename = $(this).val().split('/').pop().split('\\').pop();  // 파일명만 추출
+    }
+    // 추출한 파일명 삽입
+    $(this).siblings('.upload-name').val(filename);
+  });
+}); 
+  </script>
+</head>
+<body>
+  
+  <div class="jstalktheme" id="jstalktheme_test" style="height: 100%;" >
+    <div class="w3-container w3-light-grey w3-text-dark-grey w3-large" id="roomTitle">
+        <div class="w3-left"><span><b>${room.title}</b>(${fn:length(room.users)}/${room.limitUsers})</span></div>
+        <div class="w3-right w3-large">
+          <a href="#none"><span class="fa fa-bell"></span></a>&nbsp;
+          <a class="pop_test"><span class="fa fa-ellipsis-v"></span></a>
+        </div>
+      </div>
+      <div class="w3-card-4 notice">
+        <div class="w3-container w3-light-grey w3-medium">
+          <div class="w3-left">
+            <span class="fa fa-check"><b>공지사항</b></span>
+          </div>
+          <div class="w3-right">
+            <a href="${pageContext.request.contextPath}/room/roomSetting.do?roomNumber=${roomNumber}&loginId=${user.loginId}"><span class="fa fa-pencil w3-large"></span></a>&nbsp;
+            <a  class="noticeClose"><span class="fa fa-chevron-circle-up w3-large"></span></a>
+          </div>
+        </div>
+        <div class="w3-container w3-white">
+          <p class="w3-small">${room.notice}</p>
+        </div>
+      </div>
+      <div class="noticeBtn w3-pannel w3-right" >
+        <a href="#none" class="noticeOpen fa fa-chevron-circle-down w3-xxlarge w3-right"></a>
+      </div>
+       	<div class="msg" id="chatMessage">
+      
+      <!-- 대화들 -->
+  <div class="test_box">
+	<div class="w3-card-4" >
+ 	 	<div class="w3-container w3-center w3-indigo">
+   	 <h4>대화방 설정</h4>
+  	</div>
+  	<div class="w3-container w3-white">
+  	  <ul class="w3-ul">
+  	  <c:if test="${isAdmin}">
+      <li><a href="${pageContext.request.contextPath}/room/roomSetting.do?roomNumber=${roomNumber}&loginId=${user.loginId}">대화방설정</a></li>
+      </c:if>
+      <li><a href="${pageContext.request.contextPath}/roomEntry/viewUserInfo.do?roomNumber=${roomNumber}">참여자보기</a></li>
+      <li><a href="#none">채팅방나가기</a></li>
+    </ul>
+  	</div>
+	</div>
+ </div>
+  	
+  	
+  <div class="user_box" >
+  	<div class="w3-card-4" style="width:200px">
+    <div class="w3-container w3-center w3-indigo">
+      <h4>사용자 정보</h4></div>
+    <div class="w3-container w3-white" >
+      <ul class="w3-ul">
+        	<li id="userInfo">
+           
+     	 </li>
+      </ul>
+
+      <c:if test="${user.loginId eq room.admin.loginId}"   >
+         <a class="w3-btn w3-section w3-center w3-red w3-ripple w3-padding">강퇴</a>
+		 <a class="w3-btn w3-section w3-center w3-indigo w3-ripple w3-padding">위임</a>
+	</c:if> 
+
+    </div>
+  </div>
+ </div>
+
+
+    
+   <div id="mask"></div>
+
+
+  <div id="userMask"></div> 
+
+     <c:forEach items="${messageList}" var="message">
+      <c:choose>
+        <c:when test="${user.loginId eq message.from}">
+          <div class="mytalk">
+        <div class="b">
+        </div>
+        <div class="a">
+          ${message.contents}
+        </div>
+        <div class="time">
+          ${message.date}
+        </div>
+        <div class="clear">
+        </div>
+      </div>
+      <div class="blank"></div>
+       </c:when>
+      <c:otherwise>
+     <div class="othertalk">
+        <div class="profile_image"  data-loginId="${message.from}"  style="background: url('/Socket.web/resources/img/profile_image.png');">
+        </div>
+        <div class="box">
+          <div class="profile_name">
+          ${message.nickName}
+          </div>
+          <div class="a">
+          </div>
+          <div class="b">
+	           ${message.contents}
+          </div>
+          <div class="time">
+            ${message.date}
+          </div>
+        </div>
+        <div class="clear">
+        </div>
+      </div>
+      <div class="blank"></div>
+    </c:otherwise>
+   </c:choose>
+      </c:forEach>
+      </div>
+      
+    <div class="sendmsg"> 
+      <div class="w3-container w3-blue-grey">
+        <div class="filebox w3-left">
+          <label for="ex_filename">파일첨부</label> 
+          <input class="upload-name" value="파일선택" disabled="disabled">
+          <input type="file" id="ex_filename" class="upload-hidden"> 
+          <button class="w3-btn w3-white w3-round w3-text-grey">전송</button>
+          <a class="fa fa-files-o" href="#none">파일리스트</a>
+        </div>
+        <div class="w3-right w3-padding ">
+          
+        </div>
+      </div>
+      
+      <textarea id="inputMessage" class="textarea"  wrap="hard" maxlength="1000"  required  autofocus> 
+      </textarea> 
+
+      <div class="button"  id="send">
+      <p>전송</p>
+      </div>
+
+      <div class="clear">
+      </div>
+    </div>
+
+  </div>
+ 
+</body>
+<script>
+var webSocket=null;
+var textarea=null;
+var inputMessage=null;
+$(document).ready(function(){
+    var url= "ws://localhost:8080/Socket.web/broadcasting/${roomNumber}/${user.nickName}/${user.loginId}";
+   webSocket = new WebSocket(url);
+   textarea = $("#messageWindow");
+   inputMessage = $('#inputMessage');
+     webSocket.onerror = function(event) {
+      onError(event)
+    };
+    webSocket.onopen = function(event) {
+      onOpen(event)
+    };
+    webSocket.onmessage = function(event) {
+      onMessage(event)
+    };
+	
+});
+
+function onMessage(event) {
+    var jsonData = JSON.parse(event.data);
+	 var messageContnets =jsonData.message
+	 var spt  = messageContnets.split(":");
+	 var loginId=spt[0];
+	 var nickName =spt[1];
+	if(jsonData.message != null){
+		var otxtmsg = "";
+		for (var i = 2; i < spt.length; i++) {
+			otxtmsg += spt[i];
+			var length = spt.length - 1;
+			if (i == length) {
+				break;
+			}
+			otxtmsg += ":";
+		}
+   
+	var d = new Date();
+	var ampm = (d.getHours()>12 ?  "PM" : "AM");
+	var h = (d.getHours()>12 ? d.getHours()-12 : d.getHours());
+	var m = d.getMinutes();
+	jstalktheme_addmsg(true,nickName, ampm+" "+h+":"+m,otxtmsg,loginId);
+	}
+}
+
+function onOpen(event) {
+
+}
+function onError(event) {
+  alert(event.data);
+}
+
+$("#inputMessage").keyup(function (key) {
+    if (key.keyCode == 13) {
+        $("#send").click();
+    }
+});
+
+$("#send").click(function(){
+	if($.trim(inputMessage.val()).length > 0){
+		
+		var contents = inputMessage.val();
+	    
+	    contents = contents.replace(/</g,"&lt;");
+	    contents = contents.replace(/>/g,"&gt;");
+	    contents = contents.replace(/\'/g,"&quot;");
+	    contents = contents.replace(/\'/g,"&#39;");
+	    contents = contents.replace(/\n/g,"<br />");
+	    contents = contents.replace(/ /gi,"&#160;");
+		
+		var message = {};
+		message.type="TXT";
+		message.to="all"; 
+		message.contents=contents;
+		
+		webSocket.send(JSON.stringify(message));
+		 	var otxtmsg = document.getElementById("inputMessage");
+	     	var d = new Date();
+	    	var ampm = (d.getHours()>12 ?  "PM" : "AM");
+	    	var h = (d.getHours()>12 ? d.getHours()-12 : d.getHours());
+	    	var m = d.getMinutes();
+	    	jstalktheme_addmsg(false,"나", ampm+" "+h+":"+m, contents,"나");
+		 $("#chatMessage").scrollTop(99999999);
+		 inputMessage.val(""); 
+	}
+});
+
+ $("#chatMessage").scrollTop(99999999); 
+  
+ var page = 1; 
+ $("#chatMessage").scroll(function(){
+	 var height = $("#chatMessage").scrollTop();
+	if(height == 0 ){
+	     page++; 
+		$.ajax({
+	    	  url:"/Socket.web/roomEntry/addList.do"
+	    	  ,type:"post"
+	    	  ,data:{"page" : page , "roomNumber": "${roomNumber}"}
+	    	  ,success:successCallback
+	    	  ,error:errorCallback
+	      }); 
+	};
+ });
+ 
+ var addlist=[];
+ var sessionId="${user.loginId}";
+ var successCallback = function(data){
+	   addlist=data;
+        if(addlist.length == 0){
+        	return;
+        }
+	   $("#chatMessage").scrollTop(1000);
+	   $.each(addlist,function(i){
+               if(addlist[i].from == sessionId){
+            	 contents='<div class="mytalk">'
+                   +'<div class="b">'
+                   +'</div>'
+                   +'<div class="a">'+addlist[i].contents+"</div>"
+                   +'<div class="time">'+addlist[i].date+'</div>'
+                   +'<div class="clear">'
+                   +'</div>'
+                   +'</div>'
+                   +'<div class="blank"></div>'
+                   $("#chatMessage").prepend(contents);
+               }else{
+            contents='<div class="othertalk">'
+            	   + '<div class="profile_image"  style="background: url'+"('/Socket.web/resources/img/profile_image.png'"+');"'+"data-loginId="+addlist[i].from+'>'
+            	   +'</div>'
+                   +'<div class="box">'
+                   + '<div class="profile_name">'+addlist[i].nickName+"</div>"
+                   +'<div class="a"></div>'
+                   +'<div class="b">'+addlist[i].contents+'</div>'
+                   +'<div class="time">'+addlist[i].date+'</div>'
+                   +"</div>"
+                   +'<div class="clear">'
+                   +"</div>"
+                   +"</div>"
+                   +'<div class="blank"></div>'
+                   $("#chatMessage").prepend(contents);
+               }
+	   });
+   }
+ var errorCallback = function(){
+	 alert("수행중 오류가 발생했습니다");
+ };
+ 
+</script>
+</html>

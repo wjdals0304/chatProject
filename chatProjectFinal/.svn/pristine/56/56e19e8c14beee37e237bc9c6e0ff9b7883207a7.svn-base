@@ -1,0 +1,61 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<title>사용자 정보</title>
+<head>
+ <%@include file ="/resources/common/head.jsp" %>
+</head>
+<body>
+      <div class="w3-card-4" id="fileList">
+      <div class="w3-container w3-indigo">
+        <span class="w3-large w3-padding">파일리스트</span>
+        <a href="#none"class="fa fa-close w3-large infoClose w3-right"></a>
+      </div>
+		<div class="w3-container" style="overflow-y: scroll; height:250px;">		
+		  <table class="w3-table w3-bordered" style="width:280px;">
+		  	<colgroup>
+		  		<col width="40%">
+		  		<col width="30%">
+		  		<col width="30%">
+		  	</colgroup>
+		    <tr>
+		      <th>파일명</th>
+		      <th>업로더</th>
+		      <th>다운</th>
+		    </tr>
+		    <tr>
+		      <td>노래시작했다노래끝났다.mp3</td>
+		      <td>토토로</td>
+		      <td class="w3-center"><a href="#none" class="fa fa-download" aria-hidden="true"></a></td>
+		    </tr>
+		    <tr>
+		      <td>노래시작했다노래끝났다.mp3</td>
+		      <td>토토로</td>
+		      <td class="w3-center"><a href="#none" class="fa fa-download" aria-hidden="true"></a></td>
+		    </tr>
+		    <tr>
+		      <td>노래시작했다노래끝났다.mp3</td>
+		      <td>토토로</td>
+		      <td class="w3-center"><a href="#none" class="fa fa-download" aria-hidden="true"></a></td>
+		    </tr>
+		    <tr>
+		      <td>노래시작했다노래끝났다.mp3</td>
+		      <td>토토로</td>
+		      <td class="w3-center"><a href="#none" class="fa fa-download" aria-hidden="true"></a></td>
+		    </tr>
+		    <tr>
+		      <td>노래시작했다노래끝났다.mp3</td>
+		      <td>토토로</td>
+		      <td class="w3-center"><a href="#none" class="fa fa-download" aria-hidden="true"></a></td>
+		    </tr>
+		    <tr>
+		      <td>노래시작했다노래끝났다.mp3</td>
+		      <td>토토로</td>
+		      <td class="w3-center"><a href="#none" class="fa fa-download" aria-hidden="true"></a></td>
+		    </tr>
+		  </table>
+		</div>
+    </div>
+  </body>
+</html>

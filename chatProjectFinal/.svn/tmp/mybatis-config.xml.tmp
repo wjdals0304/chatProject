@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- type을 alias를 사용해서 짧게 쓰겠다. -->
+	<typeAliases>
+		<typeAlias type="chat.domain.User" alias="User"/>
+		<typeAlias type="chat.domain.Room" alias="Room"/>
+		<typeAlias type="chat.domain.Message" alias="Message"/>
+		<typeAlias type="chat.domain.UserToUser" alias="UserToUser"/>
+		<typeAlias type="chat.domain.RoomEntry" alias="RoomEntry"/>
+		<typeAlias type="chat.domain.File" alias="File"/>
+		<typeAlias type="chat.handler.BooleanToYnHandler" alias="BooleanToYnHandler"/>
+	</typeAliases>
+	
+	<typeHandlers>
+		<typeHandler handler="chat.handler.BooleanToYnHandler" javaType="boolean" jdbcType="CHAR"/>
+	</typeHandlers>
+	
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="oracle.jdbc.driver.OracleDriver" />
+<<<<<<< .mine
+				<property name="url" value="jdbc:oracle:thin:@localhost:1521:XE" />
+=======
+				<property name="url" value="jdbc:oracle:thin:@localhost:1521:xe" />
+>>>>>>> .r50
+				<property name="username" value="web" />
+				<property name="password" value="web" />
+			</dataSource>
+		</environment>
+	</environments>
+	
+	<mappers>
+		<mapper resource="mapper/UserMapper.xml" />
+		<mapper resource="mapper/RoomMapper.xml" />
+		<mapper resource="mapper/RoomEntryMapper.xml" />
+		<mapper resource="mapper/FileMapper.xml" />
+		<mapper resource="mapper/UserToUserMapper.xml" />
+	</mappers>
+	
+</configuration>

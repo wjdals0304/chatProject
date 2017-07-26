@@ -1,0 +1,52 @@
+package chat.service;
+
+import java.util.HashMap;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import chat.dao.UserDao;
+import chat.domain.User;
+
+
+@Service
+public class UserServiceLogic implements UserService {
+
+	@Autowired
+	private UserDao userDao;
+
+	@Override
+	public User retrieveUser(String loginId) {
+		
+		User user = userDao.retrieveUser(loginId);
+		
+		return user;
+	}
+
+	@Override
+	public void modifyUser(User user) {
+
+		userDao.modifyUser(user);
+		
+	}
+
+	@Override
+	public List<User> retrieveUserAll() {
+		
+		return userDao.retrieveUserAll();
+	}
+
+	@Override
+	public List<User> retrieveEqualRoomUser(String loginId , String roomNumber) {
+		// 
+		
+		HashMap<String,Object> map = new HashMap<String,Object>();
+		
+		map.put("loginId", loginId);
+		map.put("roomNumber", roomNumber);
+		
+		return userDao.retrieveEqualRoomUser(map);
+	}
+
+}

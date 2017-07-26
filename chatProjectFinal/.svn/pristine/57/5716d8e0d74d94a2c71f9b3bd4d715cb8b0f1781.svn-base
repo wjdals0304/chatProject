@@ -1,0 +1,100 @@
+package chat.socket;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonWriter;
+import javax.websocket.OnClose;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+import javax.websocket.server.PathParam;
+import javax.websocket.server.ServerEndpoint;
+
+@ServerEndpoint("/broadcasting/{id}")
+public class Broadsocket {
+
+	Service service = new Service();
+
+	@SuppressWarnings("unchecked")
+	@OnMessage
+	public void onMessage(String message, Session session, @PathParam("id") String id) throws IOException {
+		String str =id;
+		String value[] = str.split("&");
+		String room = value[0];
+		String userId = value[1];
+		
+		Set<Session> clients = service.retrieve(room);
+		for (Session client : clients) {
+			if (!client.equals(session)) {
+					client.getBasicRemote().sendText(buildJsonMessageData(userId,message));
+			}
+		}
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@OnOpen
+	public void onOpen(Session session, @PathParam("id") String id) {
+			String str =id;
+			String value[] = str.split("&");
+			String room = value[0];
+			String userId = value[1];
+			
+		Map<String, Set> beforeClients = service.retrieveClient();
+		Iterator<String> keys = beforeClients.keySet().iterator();
+		while (keys.hasNext()) {
+			String key = keys.next();
+			if (room.equals(key)) {
+				Set<Session> resultList = beforeClients.get(key);
+			
+				resultList.add(session);
+				service.add(room, resultList);
+				Set<Session> finalList = service.retrieve(room);
+			
+				System.out.println(key+"������ �� ���� "+finalList.toString());
+				System.out.println("�� :"+finalList.size());
+				return;
+			}
+		}
+			Set<Session> clientList = new HashSet<>();
+			clientList.add(session);
+			System.out.println(room+"������ ���ο� ����"+clientList.toString());
+			service.add(room,clientList);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@OnClose
+	public void onClose(Session session,@PathParam("id") String id) throws Exception {
+		String str =id;
+		String value[] = str.split("&");
+		String room = value[0];
+		String userId = value[1];
+		
+		Map<String, Set> beforeClients = service.retrieveClient();
+		Iterator<String> keys = beforeClients.keySet().iterator();
+		while(keys.hasNext()){
+			String key= keys.next();
+			if(room.equals(key)){
+				Set<Session> resultList= beforeClients.get(key);
+				resultList.remove(session);
+				service.remove(room,resultList);
+			}
+		}
+	}
+	
+	public String buildJsonMessageData(String userId,String message){
+			JsonObject jsonObject = Json.createObjectBuilder().add("message",userId+":"+message).build();
+			StringWriter sw= new StringWriter();
+			try(JsonWriter jsonWriter = Json.createWriter(sw)){
+				jsonWriter.write(jsonObject);
+			}
+		return sw.toString();
+	}
+	
+}

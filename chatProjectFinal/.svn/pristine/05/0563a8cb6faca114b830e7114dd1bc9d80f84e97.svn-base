@@ -1,0 +1,103 @@
+package chat.service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import chat.dao.RoomDao;
+import chat.domain.Category;
+import chat.domain.Room;
+import chat.domain.RoomEntry;
+
+@Service
+public class RoomServiceLogic implements RoomService {
+
+	@Autowired
+	private RoomDao roomDao;
+
+	@Autowired
+	private RoomEntryDao roomEntryDao;
+
+	@Override
+	public Room retrieveRoom(String roomNumber) {
+		// 
+		
+		Room room = roomDao.retrieveRoom(roomNumber);
+		
+		//해당 방에 속한 유저목록 조회
+		List<RoomEntry> entryList = roomEntryDao.retrieveRoomEntryByRoomNumber(roomNumber);
+		
+		room.setUsers(entryList);
+		
+		return room;
+	}
+	
+	@Override
+	public Room retrieveRoomByAdmin(String loginId) {
+		//
+		
+		Room room = roomDao.retrieveRoomByAdmin(loginId);
+		
+		List<RoomEntry> entryList = roomEntryDao.retrieveRoomEntryByRoomNumber(room.getRoomNumber());
+		
+		room.setUsers(entryList);
+		
+		return room;
+	}
+	
+	@Override
+	public List<Room> retrieveRoomAllByRowNum(String startNum, String endNum) {
+		//
+		List<Room> roomList = roomDao.retrieveRoomAllByRowNum(startNum, endNum);
+		
+		for(Room rooms : roomList){
+			List<RoomEntry> entryList = roomEntryDao.retrieveRoomEntryByRoomNumber(rooms.getRoomNumber());
+			rooms.setUsers(entryList);
+		}
+		return roomList;
+	}
+
+	@Override
+	public List<Room> retrieveRoomByCategory(Category category, String startNum, String endNum) {
+		//
+		List<Room> roomList = roomDao.retrieveRoomByCategory(category, startNum, endNum);
+		
+		for(Room rooms : roomList){
+			List<RoomEntry> entryList = roomEntryDao.retrieveRoomEntryByRoomNumber(rooms.getRoomNumber());
+			rooms.setUsers(entryList);
+		}
+		return roomList;
+	}
+
+
+	@Override
+	public List<Room> retrieveRoomByTitleForSearch(String keyword, String startNum, String endNum) {
+		//
+	
+		List<Room> roomList = roomDao.retrieveRoomByTitleForSearch(keyword, startNum, endNum);
+		
+		for(Room rooms: roomList){
+			List<RoomEntry> entryList = roomEntryDao.retrieveRoomEntryByRoomNumber(rooms.getRoomNumber());
+			rooms.setUsers(entryList);
+		}
+		return roomList;
+	}
+
+	@Override
+	public void registerRoom(Room room) {
+		//
+		roomDao.registerRoom(room);
+		
+	}
+	
+	@Override
+	public void modifyRoom(Room room) {
+		//
+
+		roomDao.modifyRoom(room);
+
+	}
+
+}

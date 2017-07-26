@@ -1,0 +1,131 @@
+package chat.service;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import chat.dao.RoomDao;
+import chat.dao.UserDao;
+import chat.domain.Join;
+import chat.domain.Room;
+import chat.domain.User;
+
+@Service
+public class RoomServiceLogic implements RoomService {
+
+	@Autowired
+	private RoomDao roomDao;
+
+	@Autowired
+	private UserDao userDao;
+
+	@Override
+	public List<Room> retrieveRoomAll() {
+
+		List<Room> roomList = roomDao.retrieveRoomAll();
+		List<Room> newRoomList = new ArrayList<>();
+
+		for (Room r : roomList) {
+			System.out.println(r.getRoomNumber() + " 방 조회 중");
+			String rNum = r.getRoomNumber();
+			// 갱신해서 userList를 입력 받는다.?
+			r = retrieveRoom(rNum);
+			newRoomList.add(r);
+
+		}
+		return newRoomList;
+	}
+
+	@Override
+	public Room retrieveRoom(String roomNumber) {
+		Room room = roomDao.retrieveRoom(roomNumber);
+
+		System.out.println("단일 룸 조회 입장");
+		List<User> users = userDao.retrieveUserAll();
+		List<User> userList = new ArrayList<>();
+
+		for (User u : users) {
+			System.out.println("입력 받은 값 : " + roomNumber + " user가 가진 값" + u.getRoomNumber());
+			if (roomNumber.equals(u.getRoomNumber())) {
+				userList.add(u);
+				System.out.println(u.getName() + " 이(가) " + roomNumber + " 방에 입장해 있습니다. ");
+			}
+		}
+
+		room.setUsers(userList);
+
+		System.out.println("서비스 체크 방장  :" + room.getAdmin());
+
+		return room;
+	}
+
+	@Override
+	public void createRoom(Room room) {
+
+		roomDao.createRoom(room);
+
+	}
+
+	@Override
+	public void deleteRoom(String loginId, String roomNumber) {
+		//
+
+		System.out.println(loginId);
+
+		HashMap<String, Object> map = new HashMap<String, Object>();
+
+		map.put("loginId", loginId);
+		map.put("roomNumber", roomNumber);
+
+		roomDao.deleteRoom(map);
+
+		User user = userDao.retrieveUser(loginId);
+		user.setLoginId(loginId);
+		user.setRoomNumber("0");
+
+		userDao.modifyUser(user);
+
+	}
+
+	@Override
+	public void modifyRoom(Room room) {
+		//
+
+		roomDao.modifyRoom(room);
+
+	}
+
+	@Override
+	public void createJoin(Join join) {
+		//
+		roomDao.createJoin(join);
+
+	}
+
+	@Override
+	public List<Join> retrieveAllJoin() {
+		//
+		return roomDao.retrieveAllJoin();
+	}
+
+	@Override
+	public void deleteJoin(String loginId, String roomNumber) {
+		//
+		HashMap<String, Object> map = new HashMap<String, Object>();
+
+		map.put("loginId", loginId);
+		map.put("roomNumber", roomNumber);
+		roomDao.deleteJoin(map);
+
+	}
+
+	@Override
+	public List<Join> retrieveByRoomNumber(String roomNumber) {
+		// 
+		return roomDao.retrieveByRoomNumber(roomNumber);
+	}
+
+}

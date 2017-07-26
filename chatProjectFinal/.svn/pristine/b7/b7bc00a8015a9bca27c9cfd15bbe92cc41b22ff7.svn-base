@@ -1,0 +1,247 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Simple Talk</title>
+<%@include file="/resources/common/head.jsp"%>
+<script>
+	$(document).ready(function() {
+		$(".infoBtn").click(function() {
+			$("#optionRoomInfo").css({
+				"display" : "block",
+				'top' : $(this).offset().top,
+				'left' : '45%'
+			});
+		})
+
+		$(".infoClose").click(function() {
+			$("#optionRoomInfo").css("display", "none");
+		})
+
+		$("#btnMore").click(function() {
+
+			more();
+		})
+		
+		$("#selectCategory").change(function(){
+			cate = $(this).val();
+			location.href = '/Socket.web/room/roomListByCategory.do?selectCategory='+$(this).val()
+		});
+		
+		$("#inputKeyword").keydown(function (key) {
+		    if (key.keyCode == 13) {
+		        $("#doSearch").click();
+		    }
+		});
+		
+		$.ajax({
+			url : "/Socket.web/room/chkAdmin.do",
+			type : "post",
+			data : {"loginId" : '${sessionScope.loginUser.loginId}'}
+			,success : function(data){
+							if(data){
+								
+								var contents = "<button class='w3-btn w3-blue w3-medium'style='float: right;' onclick='rejectRegister()'>"
+											 + "<b>방만들기</b></button>"
+											 
+								$("#registerRoom").append(contents);
+							}else{
+															
+								var contents = "<a href = '${pageContext.request.contextPath}/room/registerRoom.do'>"
+									 + "<button class='w3-btn w3-blue w3-medium'style='float: right;'>"  
+									 + "<b>방만들기</b></button></a>"
+									 
+								$("#registerRoom").append(contents);
+	
+							}
+								
+						} 
+			,error : function(){
+						alert("수행중 에러")
+					}
+
+		});
+		
+	});
+	
+	function rejectRegister(){
+		alert("방은 1개만 생성할 수 있습니다")
+	}
+
+	var index = 1;
+	var more = function() {
+		index++;
+		
+		$.ajax({
+			url : "/Socket.web/room/searchListMore.do"
+			,type : "post"
+			,data : {"more" : index
+					 ,"keyword" : '${sessionScope.keyword}'}
+			
+			,success : successCallback
+			,error : errorCallback
+		
+		});
+
+	};
+
+	var successCallback = function(data) {
+				alert("성공?")
+		$.each(data, function(index, room) {
+			if (Object.keys(data).length != 10 || data == null) {
+				$("#btnMore").hide();
+			};
+
+			var contents = "<li><div class='w3-text-grey w3-small'><span>"
+				 + room.category + "</span> <a href=#none class='fa fa-ellipsis-h infoBtn'" 
+				 + "aria-hidden='true' style='float: right';></a></div>"
+				 + "<div class='w3-text-dark-grey w3-large'>"
+				 + "<a href=#none><span><b>" + room.title + "</b></span></a>"
+				 + "<span class='fa fa-lock'></span> </div> "
+				 + "<div class='w3-text-grey'> <span class='w3-medium'>(20/100)</span>&nbsp;&nbsp;"
+				 + "<span class='fa fa-user w3-medium aria-hidden=true'>&nbsp;"
+				 + room.admin.loginId + "</span>&nbsp;</div>"
+				 + "<div><span><button class='w3-btn w3-blue-grey w3-tiny'><b>입장</b></button></span></div></li> "
+
+			$("#roomList").append(contents);
+
+		});
+
+	};
+	
+
+	var errorCallback = function() {
+
+		alert("수행중 오류발생");
+	};
+	
+</script>
+</head>
+<body>
+	<!-- Links (sit on top) -->
+
+	<%@include file="/resources/common/navigation.jsp"%>
+	<%@include file="/resources/common/slide.jsp"%>
+	<!-- Header with image -->
+
+	<!-- Menu Container -->
+	<div class="w3-container">
+		<div class="w3-content" style="max-width: 700px">
+			<div class="w3-card-4" id="optionRoomInfo">
+				<div class="w3-container w3-indigo">
+					<span class="w3-large w3-padding">대화방 정보</span> <a href="#none"
+						class="fa fa-close w3-large infoClose" style="float: right;"></a>
+					<p>
+						<a href="#none"><span
+							style="float: right; padding-bottom: 5px;"
+							class="w3-small fa fa-sign-in">&nbsp;&nbsp;입장</span></a>
+					</p>
+				</div>
+				<div class="userList w3-container w3-white w3-small"
+					style="overflow-y: scroll; height: 250px">
+					<div class="w3-panel w3-pale-green w3-leftbar w3-border-indigo">
+						<span>방장</span>
+					</div>
+					<ul class="w3-ul ">
+						<li></li>
+					</ul>
+					<div class="w3-panel w3-pale-green w3-leftbar w3-border-indigo">
+						<span>참여자</span>
+					</div>
+					<ul class="w3-ul ">
+						<li class="w3-light-grey">참여자</li>
+						<li><a href="#none"></a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="w3-row w3-padding" id="search">
+			<form action="${pageContext.request.contextPath}/room/search.do" method="post">
+		      <input id="inputKeyword"placeholder="검색어를 입력해주세요." name="keyword" type="text" style="width:60%;">
+		      <button id="doSearch"class="w3-btn w3-blue-grey w3-medium" ><b>검색</b></button>       
+		     <span id="registerRoom">
+				
+			</span>
+		    </form>
+		    </div>
+		    
+		    
+			<hr>
+			<div class="w3-row w3-padding" id="chatList">
+
+			
+				<!-- 채팅방리스트 -->
+				<div class="w3-panel w3-indigo">채팅방 목록</div>
+				<div>
+					<ul id="roomList" class="w3-ul w3-large">
+						<c:forEach items="${roomList}" var="room">
+							<li>
+								<div class="w3-text-grey w3-small">
+									<span>${room.category}</span> <a href="#none"
+										class="fa fa-ellipsis-h infoBtn" aria-hidden="true"
+										style="float: right;"></a>
+								</div>
+								<div class="w3-text-dark-grey w3-large">
+									<a href="#none"><span><b>${room.title }</b></span></a> <span
+										class="fa fa-lock"></span>
+								</div>
+								<div class="w3-text-grey">
+									<span class="w3-medium">(${fn:length(room.users)}/${room.limitUsers })</span>&nbsp;&nbsp; <span
+										class="fa fa-user w3-medium" aria-hidden="true">&nbsp;${room.admin.loginId}</span>&nbsp;
+								</div>
+								<div>
+								<c:choose>
+									<c:when test="${ fn:length(room.users) lt room.limitUsers}">
+									<span><button class="w3-btn w3-blue-grey w3-tiny">
+											<b>입장</b>
+										</button></span>
+									</c:when>
+									<c:otherwise>
+										<c:choose>
+											<c:when test="${inRoom}">
+												<span><button class="w3-btn w3-blue-grey w3-tiny">
+													<b>입장</b>
+												</button></span>
+											</c:when>
+											<c:otherwise>
+												<span><button class="w3-btn w3-blue-grey w3-tiny">
+													<b>입장불가</b>
+												</button></span>
+											
+											</c:otherwise>
+										
+										</c:choose>
+									</c:otherwise>
+								</c:choose>
+								</div>
+							</li>
+						</c:forEach>
+					</ul>
+				</div>
+			</div>
+			<div class="w3-row w3-padding" id="listMore">
+				<c:if test="${fn:length(roomList) ge 10}">
+				<span><button id="btnMore"
+						class="w3-btn-block w3-blue w3-medium">
+						<b>${fn:length(roomList)}더보기</b>
+					</button></span>
+				</c:if>
+				
+			</div>
+			<div class="w3-tooltip w3-center">
+				<a class="w3-text-dark-grey" href="#home"><span
+					class="w3-xlarge"> <i class="fa fa-chevron-circle-up"></i></span></a>
+			</div>
+		</div>
+		<!-- End page content -->
+	</div>
+
+
+	<!--Footer link-->
+	<%@include file="/resources/common/footer.jsp"%>
+
+</body>
+</html>
